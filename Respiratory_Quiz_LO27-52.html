@@ -1,0 +1,1754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Respiratory Quiz — Learning Objectives 27–52</title>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --text: #1a202c;
+    --muted: #64748b;
+    --primary: #1f3a5f;
+    --primary-light: #dbeafe;
+    --correct: #16a34a;
+    --correct-bg: #dcfce7;
+    --wrong: #dc2626;
+    --wrong-bg: #fee2e2;
+    --shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  header {
+    background: var(--primary);
+    color: white;
+    padding: 14px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .stats {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    font-size: 14px;
+  }
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .stat-value {
+    font-weight: 600;
+    font-size: 16px;
+  }
+  .progress-bar {
+    width: 180px;
+    height: 8px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: #60a5fa;
+    transition: width 0.3s ease;
+  }
+  .reset-btn {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.15s;
+  }
+  .reset-btn:hover { background: rgba(255,255,255,0.25); }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    max-width: 1400px;
+    margin: 0 auto;
+    gap: 0;
+    min-height: calc(100vh - 56px);
+  }
+  nav.sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 16px 0;
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+  }
+  .sidebar-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    padding: 0 20px 8px;
+  }
+  .topic-link {
+    display: block;
+    padding: 10px 20px;
+    font-size: 13px;
+    color: var(--text);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    cursor: pointer;
+    transition: background 0.15s;
+    line-height: 1.3;
+  }
+  .topic-link:hover { background: var(--primary-light); }
+  .topic-link.active {
+    background: var(--primary-light);
+    border-left-color: var(--primary);
+    font-weight: 600;
+  }
+  .topic-link .num { color: var(--primary); font-weight: 600; margin-right: 6px; }
+  .topic-link .count {
+    float: right;
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--bg);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 500;
+  }
+  .topic-link.complete .count {
+    background: var(--correct-bg);
+    color: var(--correct);
+  }
+
+  main {
+    padding: 24px 32px;
+    max-width: 900px;
+  }
+  .topic-header {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 0 0 4px;
+  }
+  .topic-subheader {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+  .question-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+  }
+  .question-meta {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .question-stem {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    line-height: 1.55;
+  }
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    background: #f8fafc;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 14px;
+    text-align: left;
+    transition: all 0.12s;
+    width: 100%;
+    color: var(--text);
+    line-height: 1.45;
+  }
+  .option:hover:not(.locked) {
+    background: var(--primary-light);
+    border-color: var(--primary);
+  }
+  .option .letter {
+    font-weight: 700;
+    color: var(--primary);
+    min-width: 20px;
+  }
+  .option.correct {
+    background: var(--correct-bg);
+    border-color: var(--correct);
+    color: #166534;
+  }
+  .option.correct .letter { color: var(--correct); }
+  .option.wrong {
+    background: var(--wrong-bg);
+    border-color: var(--wrong);
+    color: #991b1b;
+  }
+  .option.wrong .letter { color: var(--wrong); }
+  .option.locked { cursor: default; }
+  .option.dim { opacity: 0.55; }
+  .feedback {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 7px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.correct {
+    background: var(--correct-bg);
+    color: #14532d;
+    border-left: 4px solid var(--correct);
+  }
+  .feedback.wrong {
+    background: var(--wrong-bg);
+    color: #7f1d1d;
+    border-left: 4px solid var(--wrong);
+  }
+  .feedback-label {
+    font-weight: 700;
+    margin-right: 6px;
+  }
+  .topic-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  .nav-btn {
+    padding: 10px 18px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--primary);
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+  .nav-btn:hover:not(:disabled) {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+  .nav-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .topic-score {
+    background: var(--primary-light);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: var(--primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .topic-score-bar {
+    flex: 1;
+    max-width: 200px;
+    height: 6px;
+    background: rgba(31,58,95,0.15);
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 0 12px;
+  }
+  .topic-score-fill {
+    height: 100%;
+    background: var(--primary);
+    transition: width 0.3s;
+  }
+
+  @media (max-width: 768px) {
+    .layout { grid-template-columns: 1fr; }
+    nav.sidebar {
+      position: static;
+      max-height: none;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+    }
+    main { padding: 16px; }
+    header { padding: 12px 16px; }
+    header h1 { font-size: 16px; }
+    .stats { font-size: 12px; gap: 12px; }
+    .progress-bar { width: 120px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Respiratory System Quiz — LO 27–52</h1>
+  <div class="stats">
+    <div class="stat">
+      <span>Answered:</span>
+      <span class="stat-value" id="stat-answered">0 / 0</span>
+    </div>
+    <div class="stat">
+      <span>Correct:</span>
+      <span class="stat-value" id="stat-correct">0 (0%)</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="overall-progress"></div></div>
+    <button class="reset-btn" id="reset-btn">Reset</button>
+  </div>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-title">Topics</div>
+    <div id="topic-list"></div>
+  </nav>
+  <main id="main"></main>
+</div>
+
+<script>
+// ============================================================
+// QUIZ DATA
+// Format: [topicNum, topicTitle, [[loNum, loText, [[stem, [opts], correctIdx, explanation], ...]], ...]]
+// ============================================================
+const QUIZ = [
+[27, "Neuromuscular Syndromes Affecting Respiratory Function", [
+  [1, "Identify the different neuromuscular syndromes affecting respiration", [
+    ["Which of the following conditions affects the neuromuscular JUNCTION rather than the motor neuron, peripheral nerve, or muscle itself?",
+     ["Amyotrophic lateral sclerosis (ALS)", "Guillain-Barré syndrome", "Myasthenia gravis", "Duchenne muscular dystrophy"],
+     2, "Myasthenia gravis is a disorder of the NMJ caused by antibodies against the acetylcholine receptor. ALS affects motor neurons, GBS affects peripheral nerves, DMD affects muscle."],
+    ["A 65-year-old man develops progressive muscle weakness and fasciculations. He also has hyperreflexia. There are no sensory changes. Which syndrome best fits?",
+     ["Guillain-Barré syndrome", "Myasthenia gravis", "Amyotrophic lateral sclerosis", "Duchenne muscular dystrophy"],
+     2, "ALS features combined upper motor neuron (hyperreflexia) and lower motor neuron (fasciculations, weakness) signs without sensory loss."]
+  ]],
+  [2, "Describe the anatomy and pathophysiology of neuromuscular disease syndromes", [
+    ["The phrenic nerve primarily originates from which spinal levels?",
+     ["C1-C2", "C3-C5", "T1-T4", "T5-T10"],
+     1, "The phrenic nerve arises from C3-C5 ('C3,4,5 keeps the diaphragm alive') and provides motor innervation to the diaphragm."],
+    ["In myasthenia gravis, antibodies target which structure?",
+     ["Voltage-gated calcium channels (presynaptic)", "Acetylcholine receptors (postsynaptic)", "Dystrophin protein in muscle", "Myelin basic protein on peripheral nerves"],
+     1, "MG is caused by antibodies against postsynaptic nicotinic acetylcholine receptors. LEMS targets presynaptic VGCCs; DMD involves dystrophin mutations; GBS involves myelin."]
+  ]],
+  [3, "Describe pulmonary function abnormalities in neuromuscular diseases", [
+    ["Neuromuscular weakness typically produces which pulmonary function pattern?",
+     ["Obstructive with ↓ FEV1/FVC", "Restrictive with preserved FEV1/FVC ratio", "Mixed obstructive/restrictive", "Normal spirometry"],
+     1, "Respiratory muscle weakness causes a restrictive pattern: ↓FVC, ↓TLC with a preserved or increased FEV1/FVC ratio."],
+    ["A drop in FVC greater than what value from sitting to supine suggests significant diaphragmatic weakness?",
+     ["5%", "10%", "20%", "50%"],
+     2, "A supine FVC decrease of >20% compared to upright is a validated bedside indicator of significant diaphragmatic weakness."]
+  ]],
+  [4, "Describe the evaluation of patients with neuromuscular diseases", [
+    ["Which bedside measurement BEST assesses the effectiveness of cough in a patient with neuromuscular weakness?",
+     ["FEV1", "DLCO", "Peak cough flow", "Total lung capacity"],
+     2, "Peak cough flow <270 L/min indicates ineffective cough and increased risk of secretion retention, a key parameter in neuromuscular disease."],
+    ["Polysomnography or overnight oximetry/capnography is particularly useful in neuromuscular patients to detect:",
+     ["Obstructive sleep apnea only", "Nocturnal hypoventilation", "Cheyne-Stokes respirations of heart failure", "Central apnea only"],
+     1, "Nocturnal hypoventilation is typically the earliest manifestation of respiratory failure in neuromuscular disease before daytime hypercapnia develops."]
+  ]],
+  [5, "Describe treatments available for patients with neuromuscular diseases", [
+    ["First-line disease-modifying therapy for amyotrophic lateral sclerosis includes:",
+     ["Pyridostigmine", "Riluzole", "IVIG", "Prednisone"],
+     1, "Riluzole (and edaravone) are disease-modifying therapies for ALS. Pyridostigmine is used for MG; IVIG for GBS/MG; steroids for myositis/DMD."],
+    ["Which noninvasive intervention is most appropriate for a neuromuscular patient with nocturnal hypoventilation and a morning PaCO₂ of 48 mmHg?",
+     ["Supplemental O₂ alone", "Nocturnal BiPAP", "High-flow nasal cannula", "Tracheostomy"],
+     1, "Nocturnal bilevel positive airway pressure (BiPAP) is first-line for chronic neuromuscular hypoventilation. O₂ alone can worsen hypercapnia."]
+  ]]
+]],
+[29, "Imaging of the Respiratory System I", [
+  [1, "Describe the normal anatomic structures on frontal and lateral chest radiographs", [
+    ["On a normal PA chest radiograph, the right hemidiaphragm is usually located:",
+     ["Lower than the left", "Higher than the left", "At the same level as the left", "Above the clavicle"],
+     1, "The right hemidiaphragm is typically 1-2 cm higher than the left due to the underlying liver."],
+    ["On a lateral chest radiograph, which space should normally appear radiolucent (darker)?",
+     ["Retrosternal space", "Cardiac silhouette", "Spine (superiorly)", "Hila"],
+     0, "The retrosternal clear space is normally lucent. Opacification there suggests anterior mediastinal mass (thymoma, teratoma, thyroid, lymphoma)."]
+  ]],
+  [2, "Analyze plain radiographs systematically and detect major abnormalities", [
+    ["How many posterior ribs should be visible above the diaphragm on a well-inspired PA CXR?",
+     ["At least 5", "At least 7", "At least 9", "At least 12"],
+     2, "Good inspiration is indicated by at least 9-10 posterior ribs visible above the hemidiaphragm."],
+    ["On a CXR, deviation of the trachea away from the affected side suggests:",
+     ["Atelectasis", "Tension pneumothorax", "Lobar pneumonia", "Simple pleural effusion of small volume"],
+     1, "Tension pneumothorax pushes mediastinum AWAY from the affected side. Atelectasis pulls it TOWARD the affected side."]
+  ]],
+  [3, "List selected classic radiologic patterns of pulmonary diseases", [
+    ["A 'honeycomb' pattern of peripheral, basilar reticular opacities on HRCT is most characteristic of:",
+     ["Pulmonary edema", "Usual interstitial pneumonia (UIP/IPF)", "Pulmonary embolism", "Asthma"],
+     1, "Honeycombing, traction bronchiectasis, and basilar/subpleural predominance define the UIP pattern, typical of idiopathic pulmonary fibrosis."],
+    ["Kerley B lines on CXR represent:",
+     ["Dilated bronchi from bronchiectasis", "Thickened interlobular septa, often from pulmonary edema", "Cavitary lesions", "Calcified granulomas"],
+     1, "Kerley B lines are short horizontal lines at the lung periphery perpendicular to the pleura, representing thickened interlobular septa (edema, lymphangitic carcinomatosis)."]
+  ]],
+  [4, "List the imaging modalities available to examine the respiratory system", [
+    ["Which modality is considered the standard first-line imaging test for most pulmonary complaints?",
+     ["HRCT", "MRI", "Chest radiograph", "V/Q scan"],
+     2, "The chest radiograph is the universally available, low-cost, low-dose first-line imaging study for most pulmonary complaints."],
+    ["PET-CT is especially useful in which scenario?",
+     ["Acute asthma exacerbation", "Lung cancer staging", "Diagnosis of pneumothorax", "Monitoring of CHF"],
+     1, "PET-CT uses FDG metabolism to detect and stage hypermetabolic tumors including NSCLC; also useful for solitary pulmonary nodule characterization."]
+  ]],
+  [5, "Describe the appropriate roles of imaging modalities in selected clinical scenarios", [
+    ["A pregnant woman has suspected pulmonary embolism but CT contrast is contraindicated. What is the preferred next imaging test?",
+     ["Doppler ultrasound of the legs", "V/Q scan", "Chest MRI", "No imaging, anticoagulate empirically"],
+     1, "V/Q scan is preferred for PE evaluation when CTPA is contraindicated (e.g., severe renal failure, contrast allergy). Lower-limb Doppler may also support diagnosis if DVT is found."],
+    ["Bedside ultrasound can quickly evaluate for which of the following?",
+     ["Small pulmonary nodule in the RLL", "Pleural effusion for thoracentesis guidance", "Coronary artery stenosis", "Pulmonary hypertension severity"],
+     1, "Bedside thoracic US can rapidly identify pleural effusion, guide thoracentesis, and detect pneumothorax (absent lung sliding)."]
+  ]],
+  [6, "Describe how to localize chest pathology using the silhouette sign", [
+    ["Loss of the right heart border on a PA CXR suggests pathology in which location?",
+     ["Right upper lobe", "Right middle lobe", "Right lower lobe", "Lingula"],
+     1, "The right middle lobe abuts the right heart border. Loss of this border = RML pathology (e.g., RML pneumonia, RML atelectasis)."],
+    ["Loss of the left hemidiaphragm silhouette on a PA CXR localizes disease to:",
+     ["Left upper lobe", "Lingula", "Left lower lobe", "Pericardium"],
+     2, "The left hemidiaphragm abuts the left lower lobe. Silhouette loss there localizes pathology to the LLL."]
+  ]],
+  [7, "Summarize the radiographic manifestations of pulmonary edema", [
+    ["Which CXR finding is MOST associated with alveolar pulmonary edema?",
+     ["Cephalization of pulmonary vessels", "'Bat-wing' perihilar opacities with air bronchograms", "Flattened diaphragms", "Pulmonary nodules"],
+     1, "Alveolar-stage edema produces bilateral perihilar 'bat-wing' or 'butterfly' opacities with air bronchograms. Cephalization is the earliest sign (interstitial)."],
+    ["Which CXR feature favors CARDIOGENIC over non-cardiogenic pulmonary edema?",
+     ["Normal heart size", "Enlarged cardiac silhouette and pleural effusions", "Patchy peripheral opacities", "Absence of vascular redistribution"],
+     1, "Cardiogenic edema typically shows cardiomegaly, pleural effusions, cephalization, and Kerley B lines; ARDS usually shows a normal heart, peripheral distribution, and no effusions."]
+  ]],
+  [8, "Describe imaging modalities for pulmonary thromboembolic disease, incl. DVT", [
+    ["The current first-line imaging test for suspected acute pulmonary embolism in a hemodynamically stable non-pregnant patient is:",
+     ["Chest x-ray", "V/Q scan", "CT pulmonary angiogram (CTPA)", "MRI chest"],
+     2, "CTPA directly visualizes filling defects in pulmonary arteries and is the standard imaging test for suspected acute PE."],
+    ["The diagnostic imaging test of choice for lower-extremity deep vein thrombosis is:",
+     ["Contrast venography", "Compression/Doppler ultrasound", "CT venography", "MR venography"],
+     1, "Compression ultrasound (with color Doppler) is the first-line, safe, non-invasive test for DVT. Non-compressibility of the vein is diagnostic."]
+  ]],
+  [9, "DDx and radiologic evaluation of the solitary pulmonary nodule", [
+    ["A central 'popcorn' calcification pattern in a pulmonary nodule is most suggestive of:",
+     ["Hamartoma", "Squamous cell carcinoma", "Tuberculoma", "Metastasis"],
+     0, "'Popcorn' calcification is classic for pulmonary hamartoma (benign cartilaginous tumor)."],
+    ["A pulmonary nodule that has remained stable in size for at least how long is generally considered benign?",
+     ["6 months", "1 year", "2 years", "5 years"],
+     2, "Stability of a solid nodule for ≥2 years strongly suggests a benign etiology. Subsolid nodules may need longer follow-up (up to 5 years)."]
+  ]]
+]],
+[30, "Imaging of the Respiratory System II", [
+  [1, "Review of imaging concepts (see Imaging I)", [
+    ["Which finding on CT most reliably indicates the presence of CHRONIC pulmonary embolism?",
+     ["Fresh-appearing central filling defect", "Eccentric wall-adherent thrombus with webs/bands", "Normal pulmonary arteries", "Tree-in-bud opacities"],
+     1, "Chronic PE shows eccentric, partially recanalized thrombi with webs, bands, or arterial stenosis—unlike acute PE's central filling defect."],
+    ["Recommended lung-cancer screening with low-dose CT is currently indicated in which patient (USPSTF)?",
+     ["30-year-old never-smoker with cough", "55-year-old with 10 pack-year history who quit 25 years ago", "60-year-old current smoker with 25 pack-years", "70-year-old never-smoker"],
+     2, "USPSTF recommends annual low-dose CT in adults 50-80 yr with ≥20 pack-years who currently smoke or quit within the past 15 years."]
+  ]]
+]],
+[31, "Pneumonia", [
+  [1, "Differences in onset and symptoms between typical and atypical CAP", [
+    ["A 72-year-old develops a sudden fever of 39.5°C, rigors, pleuritic chest pain, and rusty sputum. This presentation is most consistent with:",
+     ["Atypical pneumonia from Mycoplasma", "Typical pneumonia from S. pneumoniae", "Viral upper respiratory infection", "PE with infarction"],
+     1, "Abrupt onset with rigors, pleuritic pain, and 'rusty' sputum classically describes typical pneumococcal (lobar) pneumonia."],
+    ["A 19-year-old college student has 2 weeks of gradually worsening dry cough, low-grade fever, and myalgias. CXR shows patchy interstitial infiltrates. The most likely pathogen is:",
+     ["Streptococcus pneumoniae", "Mycoplasma pneumoniae", "Pseudomonas aeruginosa", "Klebsiella pneumoniae"],
+     1, "Gradual onset, dry cough, extrapulmonary symptoms, patchy infiltrates, and a young otherwise-healthy patient fit atypical (Mycoplasma) pneumonia."]
+  ]],
+  [2, "Most frequent bacteriologic etiology of typical CAP", [
+    ["The single most common bacterial cause of typical CAP across all age groups is:",
+     ["Haemophilus influenzae", "Staphylococcus aureus", "Streptococcus pneumoniae", "Legionella pneumophila"],
+     2, "S. pneumoniae remains the #1 bacterial cause of CAP in most age groups and produces classic lobar pneumonia."],
+    ["A patient with severe COPD develops acute pneumonia. In addition to S. pneumoniae, which organism is a particularly common cause in this population?",
+     ["Pseudomonas aeruginosa (early)", "Haemophilus influenzae", "Enterococcus faecalis", "Candida albicans"],
+     1, "H. influenzae and M. catarrhalis are common CAP pathogens in COPD. Pseudomonas is more typical in severe/bronchiectatic disease or HAP."]
+  ]],
+  [3, "Three most frequent causes of atypical CAP", [
+    ["Which triad represents the three most common atypical bacterial causes of CAP?",
+     ["S. pneumoniae, H. influenzae, M. catarrhalis", "Mycoplasma, Chlamydia pneumoniae, Legionella", "S. aureus, Klebsiella, Pseudomonas", "E. coli, Enterobacter, Serratia"],
+     1, "Mycoplasma pneumoniae, Chlamydia pneumoniae, and Legionella pneumophila are the classic atypical CAP pathogens."],
+    ["Which atypical pneumonia pathogen is most often associated with GI symptoms, hyponatremia, elevated LDH, and exposure to contaminated water?",
+     ["Mycoplasma pneumoniae", "Chlamydia pneumoniae", "Legionella pneumophila", "Chlamydophila psittaci"],
+     2, "Legionella classically causes GI symptoms, hyponatremia (SIADH-like), hepatic transaminase elevation, and is associated with contaminated water sources."]
+  ]],
+  [4, "Treatment of typical CAP", [
+    ["An otherwise healthy 25-year-old outpatient with typical CAP should receive:",
+     ["IV ceftriaxone", "Oral amoxicillin", "Oral vancomycin", "Ciprofloxacin"],
+     1, "For healthy outpatients without comorbidities or recent antibiotic use, oral amoxicillin (high-dose) or doxycycline is first-line."],
+    ["An inpatient (non-ICU) with typical CAP is best treated with:",
+     ["Ceftriaxone + azithromycin", "Oral amoxicillin alone", "Vancomycin + cefepime", "Acyclovir"],
+     0, "Non-ICU inpatients receive a β-lactam (ceftriaxone) + macrolide OR monotherapy with a respiratory fluoroquinolone (levofloxacin or moxifloxacin)."]
+  ]],
+  [5, "Treatment of atypical CAP", [
+    ["β-lactam antibiotics are INEFFECTIVE against atypical pathogens primarily because:",
+     ["These bacteria are resistant via β-lactamases", "Mycoplasma lacks a cell wall and Chlamydia/Legionella are intracellular", "β-lactams do not reach the lung", "They are all viral infections"],
+     1, "Mycoplasma has no cell wall (nothing to inhibit) and Chlamydia/Legionella are intracellular — β-lactams are ineffective. Macrolides, doxycycline, and fluoroquinolones are used."],
+    ["Which is an appropriate first-line agent for atypical (Legionella) pneumonia?",
+     ["Cephalexin", "Azithromycin or levofloxacin", "Metronidazole", "Nystatin"],
+     1, "Macrolides (azithromycin) and respiratory fluoroquinolones (levofloxacin, moxifloxacin) are first-line. Doxycycline is an alternative."]
+  ]],
+  [6, "Penicillin use and resistance in pneumonia", [
+    ["Resistance of Streptococcus pneumoniae to penicillin is primarily mediated by:",
+     ["β-lactamase production", "Altered penicillin-binding proteins (PBPs)", "Efflux pumps", "Porin mutations"],
+     1, "Unlike many gram-negative organisms, pneumococcal resistance is due to altered PBPs, not β-lactamase. High-dose amoxicillin or ceftriaxone can often overcome intermediate resistance."],
+    ["For non-meningeal pneumococcal infection, resistance is defined by a penicillin MIC of:",
+     ["≥0.1 µg/mL", "≥0.5 µg/mL", "≥8 µg/mL", "≥32 µg/mL"],
+     2, "Current CLSI breakpoints for non-meningeal pneumococcal infections: susceptible ≤2 µg/mL, resistant ≥8 µg/mL. Meningitis breakpoints are stricter (susceptible ≤0.06 µg/mL)."]
+  ]],
+  [7, "Antibiotics for penicillin-resistant S. pneumoniae", [
+    ["Which class of antibiotic has reliable activity against penicillin-resistant S. pneumoniae?",
+     ["Narrow-spectrum penicillins", "First-generation cephalosporins", "Respiratory fluoroquinolones (moxifloxacin, levofloxacin)", "Ampicillin monotherapy"],
+     2, "Respiratory fluoroquinolones (moxifloxacin, levofloxacin, gemifloxacin) reliably cover PRSP. Other options include high-dose ceftriaxone, vancomycin, linezolid."],
+    ["Empirical monotherapy with a MACROLIDE for severe pneumococcal pneumonia is increasingly problematic because:",
+     ["Macrolides cause too much nausea", "Macrolide resistance in S. pneumoniae is now common", "Macrolides interact with β-lactams", "Macrolides require IV administration only"],
+     1, "Macrolide resistance in S. pneumoniae is now widespread; macrolide monotherapy is inadequate for severe disease. Combination with a β-lactam is preferred."]
+  ]],
+  [8, "Differentiate CAP from nosocomial pneumonia", [
+    ["Hospital-acquired pneumonia (HAP) is defined as pneumonia that develops how long after hospital admission?",
+     ["Within 24 hours", "≥48 hours after admission", "≥1 week after admission", "Anytime after discharge"],
+     1, "HAP is pneumonia arising ≥48 h after hospital admission in a non-intubated patient; VAP is pneumonia ≥48 h after endotracheal intubation."],
+    ["A patient who developed pneumonia 3 days after ICU intubation has which type of pneumonia?",
+     ["Community-acquired pneumonia (CAP)", "Ventilator-associated pneumonia (VAP)", "Aspiration pneumonia", "Healthcare-associated pneumonia (HCAP)"],
+     1, "Pneumonia developing ≥48 h after endotracheal intubation is defined as VAP, which typically involves resistant nosocomial pathogens."]
+  ]],
+  [9, "Etiologies of nosocomial pneumonia", [
+    ["Which organism is a particularly common cause of ventilator-associated pneumonia?",
+     ["Streptococcus pneumoniae", "Mycoplasma pneumoniae", "Pseudomonas aeruginosa", "Chlamydia pneumoniae"],
+     2, "Pseudomonas aeruginosa, other non-lactose fermenting gram-negatives, and MRSA are major VAP pathogens."],
+    ["Which risk factor most increases the likelihood of MRSA pneumonia?",
+     ["Outpatient respiratory infection", "Recent IV antibiotic use within 90 days or prior MRSA colonization", "Young age with no comorbidities", "Mild COPD"],
+     1, "Prior MRSA colonization/infection and recent IV antibiotics within 90 days are major MRSA pneumonia risk factors and should prompt empirical MRSA coverage."]
+  ]],
+  [10, "Evaluation and treatment of nosocomial pneumonia", [
+    ["Empiric therapy for suspected HAP/VAP should generally include coverage for which of the following?",
+     ["Pseudomonas and MRSA", "Mycobacterium tuberculosis", "Aspergillus", "Viruses only"],
+     0, "Empiric HAP/VAP therapy targets Pseudomonas (antipseudomonal β-lactam) and MRSA (vancomycin or linezolid), with de-escalation based on cultures."],
+    ["Recommended duration of antibiotic therapy for most cases of HAP/VAP is:",
+     ["3 days", "5 days", "7 days", "21 days"],
+     2, "Most HAP/VAP can be treated with a 7-day course (IDSA/ATS 2016), extended if a resistant pathogen, bacteremia, or inadequate response occurs."]
+  ]]
+]],
+[32, "Thoracic Surgery", [
+  [1, "Role of surgery in non-cardiac chest diseases", [
+    ["Which of the following is NOT a typical role of thoracic surgery?",
+     ["Lobectomy for early-stage NSCLC", "Decortication for chronic empyema", "Coronary artery bypass grafting", "Thymectomy for myasthenia with thymoma"],
+     2, "CABG is a cardiac surgery. Thoracic surgery addresses non-cardiac chest conditions including lung cancer, pleural disease, and mediastinal masses."],
+    ["VATS (video-assisted thoracoscopic surgery) offers what advantage over open thoracotomy?",
+     ["Better view of distant mediastinal structures", "Smaller incisions with less morbidity and faster recovery", "Ability to perform any major resection", "Elimination of need for chest tube"],
+     1, "VATS uses small incisions with camera guidance, reducing pain, hospital stay, and postoperative complications versus open thoracotomy."]
+  ]],
+  [2, "Advantages and disadvantages of surgical intervention", [
+    ["A major advantage of surgical resection of a solitary pulmonary nodule is:",
+     ["Avoids need for any anesthesia", "Provides definitive tissue diagnosis and can be curative", "Always preserves full lung function", "Lower cost than all medical therapies"],
+     1, "Surgical excision provides a definitive histologic diagnosis and, when the lesion is malignant and localized, can be curative."],
+    ["A key disadvantage of pneumonectomy compared to lobectomy in lung cancer is:",
+     ["Higher perioperative mortality and greater loss of lung function", "Inferior oncologic clearance", "Longer operative time cannot be achieved", "Requires no thoracic epidural"],
+     0, "Pneumonectomy has higher perioperative mortality and substantially greater loss of lung function than lobectomy; it is reserved for cases where lobectomy is insufficient."]
+  ]],
+  [3, "Indications for thoracic surgery consultation", [
+    ["Which finding should prompt thoracic surgery consultation?",
+     ["Uncomplicated viral bronchitis", "Recurrent spontaneous pneumothorax", "Resolved upper respiratory infection", "Stable asthma on ICS"],
+     1, "Recurrent pneumothorax requires surgical intervention (bleb resection, pleurodesis/pleurectomy) to prevent recurrence."],
+    ["A 35-year-old is found to have an anterior mediastinal mass and symptoms of myasthenia gravis. Which consultation is indicated?",
+     ["Dermatology", "Thoracic surgery for possible thymectomy", "Orthopedic surgery", "Urology"],
+     1, "MG with a thymoma warrants thymectomy, which often improves MG symptoms even in non-thymomatous disease."]
+  ]],
+  [4, "Surgical procedures for pulmonary disease", [
+    ["The most common surgical treatment for early-stage NSCLC is:",
+     ["Wedge resection only", "Segmentectomy", "Lobectomy", "Pneumonectomy"],
+     2, "Lobectomy with mediastinal lymph node dissection is the standard curative procedure for resectable stage I-II NSCLC."],
+    ["Pleurodesis is used primarily to treat:",
+     ["Solitary pulmonary nodule", "Recurrent pleural effusion or pneumothorax", "Bronchiectasis", "Solitary pulmonary nodule"],
+     1, "Pleurodesis obliterates the pleural space to prevent recurrent effusion or pneumothorax via chemical (talc) or mechanical/surgical abrasion."]
+  ]]
+]],
+[33, "Diseases of the Nasal Cavity, Paranasal Sinuses & Respiratory Allergy", [
+  [1, "Anatomy of the nasal cavity", [
+    ["The nasolacrimal duct drains into which meatus of the nasal cavity?",
+     ["Superior meatus", "Middle meatus", "Inferior meatus", "Sphenoethmoidal recess"],
+     2, "The nasolacrimal duct drains into the inferior meatus, under the inferior turbinate."],
+    ["Kiesselbach's plexus, a common site of anterior epistaxis, is located on the:",
+     ["Posterior nasopharynx", "Anterior nasal septum", "Superior turbinate", "Hard palate"],
+     1, "Kiesselbach's plexus is an anastomosis of vessels on the anterior nasal septum and is responsible for the majority of anterior nosebleeds."]
+  ]],
+  [2, "Selected benign diseases affecting the nasal cavity", [
+    ["Samter's triad consists of:",
+     ["Asthma, nasal polyps, aspirin sensitivity", "Asthma, atopic dermatitis, rhinitis", "Nasal polyps, epistaxis, anosmia", "Deviated septum, turbinate hypertrophy, snoring"],
+     0, "Samter's triad (aspirin-exacerbated respiratory disease): asthma + nasal polyps + aspirin/NSAID sensitivity."],
+    ["Juvenile nasopharyngeal angiofibroma characteristically occurs in:",
+     ["Adolescent girls with recurrent sinusitis", "Adolescent boys with recurrent epistaxis", "Elderly smokers with anosmia", "Newborns with feeding difficulty"],
+     1, "JNA is a locally aggressive vascular tumor almost exclusively seen in adolescent males presenting with nasal obstruction and epistaxis."]
+  ]],
+  [3, "Malignant diseases affecting the nasal cavity", [
+    ["The most common malignant tumor of the nasal cavity and paranasal sinuses is:",
+     ["Adenoid cystic carcinoma", "Squamous cell carcinoma", "Melanoma", "Esthesioneuroblastoma"],
+     1, "Squamous cell carcinoma is the most common sinonasal malignancy. Occupational risks: wood dust, nickel."],
+    ["Esthesioneuroblastoma arises from which structure?",
+     ["Olfactory epithelium at the cribriform plate", "Nasopharyngeal mucosa", "Minor salivary glands", "Inferior turbinate"],
+     0, "Esthesioneuroblastoma (olfactory neuroblastoma) arises from olfactory neuroepithelium at the cribriform plate."]
+  ]],
+  [4, "Acute and chronic nasal disorders", [
+    ["Rhinitis medicamentosa is caused by:",
+     ["Allergic reaction to intranasal steroids", "Overuse of topical decongestants", "Bacterial infection", "Septal deviation"],
+     1, "Rhinitis medicamentosa is rebound nasal congestion from prolonged (>3-5 d) use of topical α-agonists (oxymetazoline, phenylephrine)."],
+    ["Chronic rhinosinusitis is defined as symptoms lasting:",
+     ["More than 1 week", "More than 4 weeks", "More than 12 weeks", "More than 6 months"],
+     2, "Chronic rhinosinusitis is defined by ≥12 weeks of symptoms (nasal obstruction, discharge, facial pain/pressure, hyposmia)."]
+  ]],
+  [5, "Pathophysiology of allergy in ENT disease", [
+    ["Allergic rhinitis is mediated by which hypersensitivity mechanism?",
+     ["Type I IgE-mediated", "Type II antibody-mediated", "Type III immune complex", "Type IV T-cell mediated"],
+     0, "Allergic rhinitis is a classic type I (IgE-mediated) hypersensitivity with mast cell degranulation upon allergen exposure."],
+    ["In the early phase of allergic reaction, the most important preformed mediator released from mast cells is:",
+     ["Histamine", "Leukotriene B4", "TNF-α", "Interleukin-6"],
+     0, "Histamine is the primary preformed mediator; it causes rapid sneezing, rhinorrhea, and pruritus in the early (minutes) phase."]
+  ]],
+  [6, "Appropriate testing for allergy", [
+    ["The first-line diagnostic test for inhalant allergies is:",
+     ["Total serum IgE level", "Skin prick testing", "Nasal biopsy", "CT sinus"],
+     1, "Skin prick test is fast, inexpensive, and the most sensitive first-line test. Specific IgE (ImmunoCAP/RAST) is used when skin testing is contraindicated."],
+    ["Skin testing should generally be avoided in which patient?",
+     ["Someone currently on oral antihistamines", "Someone taking a PPI", "Someone with asthma on controller", "Someone with mild seasonal allergies"],
+     0, "Antihistamines suppress wheal-and-flare reactions and must be discontinued before skin testing; serum specific IgE can be used instead."]
+  ]],
+  [7, "Symptoms of respiratory allergy", [
+    ["Which clinical sign is NOT typical of allergic rhinitis?",
+     ["Transverse nasal crease (allergic salute)", "Allergic shiners", "Fever over 39°C", "Postnasal drip"],
+     2, "High fever is NOT typical of allergy and should prompt evaluation for infection. Other answers are classic allergic signs."],
+    ["A boggy, pale nasal mucosa on exam suggests:",
+     ["Bacterial rhinosinusitis", "Allergic rhinitis", "Viral URI", "Septal hematoma"],
+     1, "Allergic rhinitis typically presents with boggy, pale/bluish nasal mucosa, in contrast to erythematous mucosa of infection."]
+  ]],
+  [8, "Diagnosis of respiratory allergy", [
+    ["Which feature on history best supports allergic rhinitis over nonallergic rhinitis?",
+     ["Symptoms triggered by perfumes and temperature change", "Seasonal variation with predictable exposure to pollen", "Symptoms limited to sleep", "Painless enlargement of cervical nodes"],
+     1, "Seasonal variability with known allergen exposure (pollen, dust mites) and personal/family history of atopy supports allergic etiology."],
+    ["A patient has year-round symptoms of rhinitis, no seasonal variation, negative skin testing, and no atopy. This best fits:",
+     ["Seasonal allergic rhinitis", "Perennial allergic rhinitis", "Nonallergic (vasomotor) rhinitis", "Acute viral rhinitis"],
+     2, "Perennial nonallergic rhinitis (vasomotor) lacks IgE involvement; triggers include temperature changes, strong odors, and emotions."]
+  ]],
+  [9, "Treatment of respiratory allergy", [
+    ["Which is considered the MOST effective single therapy for moderate-to-severe allergic rhinitis?",
+     ["Oral decongestants", "Intranasal corticosteroids", "Oral first-generation antihistamines", "Nasal saline"],
+     1, "Intranasal corticosteroids (fluticasone, mometasone) are the most effective monotherapy for allergic rhinitis."],
+    ["Allergen-specific immunotherapy (SCIT/SLIT) is MOST appropriate for which patient?",
+     ["Severe anaphylaxis with multiple food allergies", "Mild intermittent rhinitis well-controlled on PRN antihistamine", "Persistent inhalant allergy inadequately controlled with pharmacotherapy", "Nonallergic vasomotor rhinitis"],
+     2, "Immunotherapy is indicated when standard pharmacotherapy is inadequate or intolerable for IgE-mediated inhalant allergies (confirmed by testing)."]
+  ]],
+  [10, "Physical examination of the paranasal sinuses", [
+    ["Which maneuver is used at the bedside to assess for opacification of a maxillary sinus?",
+     ["Transillumination", "Percussion of occiput", "Auscultation", "Rinne test"],
+     0, "Transillumination (dim room, light pressed against infraorbital region) can detect maxillary sinus opacification, though it is insensitive and rarely relied on alone."],
+    ["Nasal endoscopy is especially useful to examine:",
+     ["The oropharynx", "The middle meatus and sinus drainage pathways", "The eustachian tube exclusively", "The trachea and carina"],
+     1, "Rigid or flexible endoscopy allows direct visualization of the middle meatus (drainage for frontal/maxillary/anterior ethmoid sinuses), polyps, and discharge."]
+  ]],
+  [11, "Radiological views for paranasal sinuses", [
+    ["The Waters view is best for visualizing which sinus?",
+     ["Frontal sinus only", "Sphenoid sinus", "Maxillary sinus", "Posterior ethmoids"],
+     2, "The Waters (occipitomental) view provides the best plain-film visualization of the maxillary (and frontal) sinuses."],
+    ["The GOLD STANDARD imaging study for chronic sinusitis or surgical planning is:",
+     ["Plain sinus series", "Coronal CT sinuses", "MRI", "Ultrasound"],
+     1, "Coronal thin-section CT is the imaging modality of choice for evaluating chronic rhinosinusitis and planning endoscopic surgery."]
+  ]],
+  [12, "Infections of the paranasal sinuses", [
+    ["The most common bacterial cause of acute bacterial rhinosinusitis is:",
+     ["Pseudomonas aeruginosa", "Streptococcus pneumoniae", "Staphylococcus epidermidis", "E. coli"],
+     1, "S. pneumoniae, H. influenzae, and M. catarrhalis are the most common bacterial causes of acute rhinosinusitis."],
+    ["A diabetic patient with DKA presents with acute facial pain, black necrotic eschar in the palate, and orbital involvement. The most likely diagnosis is:",
+     ["Bacterial sinusitis", "Mucormycosis (invasive rhinocerebral)", "Allergic fungal sinusitis", "Viral sinusitis"],
+     1, "Rhino-orbital-cerebral mucormycosis (Mucorales) is a life-threatening invasive fungal sinusitis in uncontrolled DM or immunocompromise; requires urgent surgical debridement + amphotericin B."]
+  ]],
+  [13, "Neoplastic diseases of the paranasal sinuses", [
+    ["Occupational exposure to wood dust and nickel is linked to which sinonasal cancer?",
+     ["Adenocarcinoma (ethmoid)", "Glioblastoma", "Oat cell carcinoma", "Basal cell carcinoma"],
+     0, "Ethmoid sinus adenocarcinoma is strongly associated with wood dust exposure (furniture workers) and nickel refining."],
+    ["The most common benign sinonasal neoplasm with a tendency to recur and small malignancy risk is:",
+     ["Osteoma", "Inverted papilloma", "Hemangioma", "Lipoma"],
+     1, "Inverted (Schneiderian) papilloma is locally aggressive, may recur after excision, and harbors a ~10% risk of malignant transformation."]
+  ]],
+  [14, "Diagnosis and treatment of paranasal sinus infections", [
+    ["According to IDSA guidelines, acute bacterial rhinosinusitis should be suspected when:",
+     ["Symptoms persist >10 days without improvement, or severe symptoms for 3-4 days, or 'double worsening'", "Any sinus pressure occurs for 24 hours", "There is any purulent rhinorrhea at all", "The patient has a positive strep test"],
+     0, "Criteria: persistent symptoms >10 days, severe illness >3-4 d, or double worsening (worsening after initial improvement of viral URI)."],
+    ["First-line antibiotic therapy for uncomplicated acute bacterial rhinosinusitis in most adults is:",
+     ["Azithromycin", "Amoxicillin-clavulanate", "Ciprofloxacin", "Trimethoprim-sulfamethoxazole"],
+     1, "Amoxicillin-clavulanate is preferred due to increasing β-lactamase-producing H. influenzae and M. catarrhalis."]
+  ]],
+  [15, "Diagnosis and treatment of neoplastic paranasal diseases", [
+    ["For a suspected sinonasal malignancy, initial imaging is best with:",
+     ["Plain radiograph", "CT and MRI for extent evaluation", "PET-CT only", "Ultrasound"],
+     1, "CT shows bony involvement; MRI best evaluates soft-tissue extent, perineural spread, and intracranial extension. Both often complementary."],
+    ["Treatment of locally advanced sinonasal squamous cell carcinoma typically includes:",
+     ["Observation", "Surgery +/- postoperative radiation and chemotherapy", "Antibiotics only", "Allergen immunotherapy"],
+     1, "Multimodal therapy (surgical resection with postoperative radiation +/- chemotherapy) is standard for locally advanced disease."]
+  ]]
+]],
+[34, "Acute Management of Airway Emergency", [
+  [1, "Access routes for mechanical ventilatory support", [
+    ["Which is considered a NONINVASIVE method for delivering positive-pressure ventilation?",
+     ["Orotracheal intubation", "Tracheostomy", "BiPAP via face mask", "Cricothyrotomy"],
+     2, "BiPAP/CPAP via mask (full face, nasal, or helmet) are non-invasive methods. The others are invasive."],
+    ["Long-term ventilatory support in a patient requiring prolonged mechanical ventilation is best provided via:",
+     ["Continued orotracheal tube", "Tracheostomy", "Nasotracheal tube", "Laryngeal mask airway"],
+     1, "Tracheostomy is preferred for prolonged (>2 wk) mechanical ventilation: less sedation, improved oral care and patient comfort, easier weaning."]
+  ]],
+  [2, "Airway management in adults", [
+    ["In rapid-sequence intubation of an adult, etomidate is typically dosed at:",
+     ["0.03 mg/kg", "0.3 mg/kg", "3 mg/kg", "30 mg/kg"],
+     1, "Standard etomidate induction dose is 0.3 mg/kg IV. It provides rapid, hemodynamically neutral sedation."],
+    ["After intubation, the BEST single test to confirm correct endotracheal placement is:",
+     ["Auscultation of breath sounds only", "Misting of the tube", "Waveform capnography (sustained end-tidal CO2)", "Oxygen saturation above 90%"],
+     2, "Sustained waveform capnography is the most reliable bedside confirmation of tracheal placement; auscultation and SpO2 are supportive but less specific."]
+  ]],
+  [3, "Airway management in children", [
+    ["The narrowest part of the pediatric airway (under age ~8) is:",
+     ["Vocal cords", "Cricoid cartilage", "Main bronchi", "Trachea at the sternal notch"],
+     1, "In children <8-10 years, the cricoid ring is the narrowest point of the upper airway (functionally funnel-shaped); in adults, the vocal cords are narrowest."],
+    ["A common formula to estimate uncuffed endotracheal tube size for a child is:",
+     ["(Age ÷ 2) + 2", "(Age ÷ 4) + 4", "Age × 2", "Age × 4"],
+     1, "Uncuffed ETT size (mm) ≈ (age/4) + 4; cuffed ETT ≈ (age/4) + 3.5. Depth at lip ≈ ETT × 3."]
+  ]],
+  [4, "Emergency procedure to obtain an airway", [
+    ["In a 'can't intubate, can't ventilate' scenario in an adult, the preferred emergency rescue procedure is:",
+     ["Repeat intubation with a different blade", "Emergency cricothyrotomy", "Endotracheal brushing", "Awake fiberoptic intubation"],
+     1, "Cricothyrotomy (surgical or needle) is the standard emergency rescue for the adult CICO scenario; should be performed without delay."],
+    ["Needle cricothyrotomy with transtracheal jet ventilation is the preferred emergency airway in:",
+     ["Adults", "Children under about 8-10 years", "Elderly with COPD", "Pregnant adults"],
+     1, "In young children, surgical cricothyrotomy is generally avoided due to small anatomy; needle crico with jet ventilation is preferred as a temporizing measure."]
+  ]],
+  [5, "Necessary steps in intubation", [
+    ["Which mnemonic summarizes preparation for intubation: Suction, Oxygen, Airway equipment, Pharmacology, Monitors, End-tidal CO2?",
+     ["ABCDE", "SOAP ME", "SAMPLE", "FAST"],
+     1, "'SOAP ME' is a commonly used mnemonic for intubation readiness."],
+    ["Preoxygenation with 100% oxygen before intubation is intended to:",
+     ["Reduce seizure risk", "Replace nitrogen in the FRC and extend the safe apnea time", "Prevent aspiration", "Lower the induction dose required"],
+     1, "Preoxygenation (3-5 min of 100% O2) replaces pulmonary nitrogen, providing a reservoir that markedly extends safe apnea time."]
+  ]]
+]],
+[35, "Pulmonary Rehabilitation", [
+  [1, "Rehabilitative management in restrictive pulmonary disorders", [
+    ["Which breathing technique is commonly taught in pulmonary rehab for restrictive lung disease?",
+     ["Forced expiratory cough until fatigued", "Diaphragmatic breathing with emphasis on slow, deep breaths", "Breath-holding exercises only", "Valsalva maneuver"],
+     1, "Diaphragmatic breathing and pursed-lip breathing are emphasized to improve ventilation efficiency and reduce dyspnea."],
+    ["Energy conservation techniques in pulmonary rehab typically include:",
+     ["Running daily for 1 hour regardless of symptoms", "Pacing activities and using assistive devices during ADLs", "Avoiding all physical activity", "Strict bed rest"],
+     1, "Pacing, prioritizing, planning, and using assistive devices reduce unnecessary workload, helping patients with limited ventilatory reserve."]
+  ]],
+  [2, "Rehabilitative management in obstructive pulmonary disorders", [
+    ["Pulmonary rehabilitation is most strongly recommended for which patient?",
+     ["Asymptomatic mild asthma", "Moderate-severe COPD with persistent dyspnea despite medications", "Isolated upper respiratory infection", "Asymptomatic bronchiectasis"],
+     1, "Pulmonary rehab is indicated for symptomatic patients with chronic lung disease (especially COPD, GOLD B/D) to improve quality of life and exercise capacity."],
+    ["Pursed-lip breathing in COPD patients helps by:",
+     ["Increasing carbon monoxide absorption", "Reducing dynamic hyperinflation by providing PEEP and slowing expiration", "Strengthening the diaphragm during inspiration", "Increasing dead space"],
+     1, "Pursed-lip breathing creates an expiratory resistance ('physiologic PEEP'), preventing airway collapse and reducing dynamic hyperinflation."]
+  ]],
+  [3, "Noninvasive treatment options for pulmonary disorders", [
+    ["Which disease is most commonly treated with chronic CPAP?",
+     ["Asthma", "Obstructive sleep apnea", "COPD without hypercapnia", "Bronchiectasis"],
+     1, "CPAP is the standard therapy for moderate-severe obstructive sleep apnea by providing pneumatic splinting of the upper airway."],
+    ["Long-term supplemental oxygen improves survival in COPD when resting:",
+     ["PaO2 >80 mmHg", "PaO2 ≤55 mmHg or SaO2 ≤88% (or ≤59/89% with specific comorbidities)", "Patient feels dyspneic", "Patient has any history of smoking"],
+     1, "Long-term O2 improves mortality when PaO2 ≤55 mmHg or SaO2 ≤88% (or ≤59/89% with cor pulmonale, polycythemia, edema)."]
+  ]],
+  [4, "Rationale for prescribing endurance training", [
+    ["Endurance training in COPD primarily improves exercise capacity by:",
+     ["Improving baseline FEV1 dramatically", "Enhancing peripheral muscle oxidative capacity and reducing ventilatory demand at a given workload", "Increasing total lung capacity", "Eliminating all dyspnea"],
+     1, "Training-induced peripheral muscle adaptations (↑oxidative enzymes, ↓lactate production) reduce the ventilation required at a given workload, lessening dyspnea."],
+    ["Regular pulmonary rehabilitation has been shown to:",
+     ["Cure COPD", "Reverse airflow obstruction to normal", "Reduce hospitalization rates and improve QoL in COPD", "Eliminate the need for inhalers"],
+     2, "Pulmonary rehab reduces hospitalizations, improves dyspnea, exercise tolerance, and QoL, though it does not reverse obstruction."]
+  ]],
+  [5, "Home exercise programs for pulmonary rehabilitation", [
+    ["A reasonable home aerobic exercise prescription for a stable COPD patient is:",
+     ["5 minutes walking once per week", "20-30 minutes of walking or cycling, 3-5 days per week, targeting moderate dyspnea", "2 hours of high-intensity interval training daily", "No exercise until symptoms completely resolve"],
+     1, "Standard prescription: 20-30 min aerobic exercise 3-5×/wk at a moderate intensity (Borg 4-6/10)."],
+    ["Pulse oximetry during home exercise is useful to:",
+     ["Predict FEV1 in 5 years", "Titrate supplemental oxygen and avoid desaturation below 88%", "Diagnose pulmonary embolism", "Evaluate for anemia"],
+     1, "Home SpO2 monitoring allows titration of oxygen and avoidance of exercise-induced desaturation (<88%)."]
+  ]]
+]],
+[36, "Pathology of Primary Tumors of the Lung", [
+  [1, "Define hemoptysis and describe etiology", [
+    ["Hemoptysis is defined as:",
+     ["Vomiting blood", "Coughing up blood originating from below the vocal cords", "Nosebleed", "Blood in sputum from dental work"],
+     1, "Hemoptysis = blood expectorated from the lower respiratory tract (below the vocal cords), distinct from hematemesis and pseudohemoptysis."],
+    ["Globally, the most common infectious cause of hemoptysis is:",
+     ["Tuberculosis", "Pneumococcal pneumonia", "Aspergillosis", "Influenza"],
+     0, "TB is the most common infectious cause worldwide; in developed countries, bronchitis and bronchiectasis predominate."]
+  ]],
+  [2, "Incidence, etiology, and pathogenesis of lung cancer", [
+    ["Lung cancer is currently the leading cause of cancer death in the United States in:",
+     ["Men only", "Women only", "Both men and women", "Neither men nor women"],
+     2, "Lung cancer is the #1 cancer killer in both men and women in the U.S."],
+    ["The leading environmental cause of lung cancer in nonsmokers is:",
+     ["Asbestos", "Radon gas", "Arsenic", "Diesel exhaust"],
+     1, "Radon exposure (from soil, building materials) is the #2 overall cause of lung cancer and the leading cause among nonsmokers."]
+  ]],
+  [3, "Current classification and manifestations of lung tumors", [
+    ["The most common histologic subtype of lung cancer overall is:",
+     ["Squamous cell carcinoma", "Small cell carcinoma", "Adenocarcinoma", "Large cell carcinoma"],
+     2, "Adenocarcinoma is now the most common lung cancer, especially in nonsmokers, women, and Asian populations; it is typically peripheral."],
+    ["Squamous cell carcinoma of the lung is MOST classically associated with which features?",
+     ["Central tumor, cavitation, hypercalcemia from PTHrP", "Peripheral tumor, cavitation, SIADH", "Central tumor, carcinoid syndrome, clubbing", "Peripheral, HPO only"],
+     0, "Squamous cell carcinoma is typically central, commonly cavitates, and is strongly linked to hypercalcemia via PTHrP."]
+  ]],
+  [4, "Spread of lung carcinoma", [
+    ["A Pancoast (superior sulcus) tumor characteristically causes:",
+     ["Carcinoid syndrome", "Horner syndrome and brachial plexus pain due to apical tumor invasion", "Pulmonary hypertension", "Nephrotic syndrome"],
+     1, "Pancoast tumors invade the apex, compressing the stellate ganglion (Horner's: ptosis, miosis, anhidrosis) and brachial plexus (shoulder/arm pain, C8-T1)."],
+    ["Lung carcinoma most commonly spreads hematogenously to which site?",
+     ["Skin", "Adrenal glands, liver, brain, bone", "Prostate", "Colon"],
+     1, "Adrenals, liver, brain, and bones are common sites of distant metastasis from lung carcinoma."]
+  ]],
+  [5, "Paraneoplastic syndromes in lung cancer", [
+    ["SIADH is most characteristic of which lung cancer subtype?",
+     ["Squamous cell carcinoma", "Adenocarcinoma", "Small cell carcinoma", "Large cell carcinoma"],
+     2, "Small cell lung cancer (neuroendocrine) classically secretes ADH, causing SIADH with euvolemic hyponatremia."],
+    ["Lambert-Eaton myasthenic syndrome is most often associated with which cancer?",
+     ["Adenocarcinoma of the lung", "Small cell lung cancer", "Bronchial carcinoid", "Mesothelioma"],
+     1, "LEMS is frequently paraneoplastic in SCLC; antibodies target presynaptic voltage-gated Ca2+ channels."]
+  ]],
+  [6, "Diagnosis and staging of lung cancer", [
+    ["The most widely used staging system for NSCLC is:",
+     ["Ann Arbor", "TNM (8th edition)", "Dukes staging", "Binet staging"],
+     1, "AJCC/UICC TNM (currently 8th edition) is the standard staging system for NSCLC."],
+    ["Small cell lung cancer is most often staged using:",
+     ["TNM alone", "Limited-stage vs. extensive-stage (VALG) system", "Ann Arbor", "Dukes"],
+     1, "SCLC has historically been classified as limited- vs. extensive-stage, though TNM is also increasingly applied."]
+  ]]
+]],
+[37, "Bronchial Carcinoid, Tumors of Pleura & Metastatic Lung Tumors", [
+  [1, "Bronchial carcinoid tumor and carcinoid syndrome", [
+    ["Bronchial carcinoid tumors arise from which cell type?",
+     ["Type II pneumocytes", "Kulchitsky (neuroendocrine) cells", "Alveolar macrophages", "Basement membrane fibroblasts"],
+     1, "Carcinoids arise from Kulchitsky (neuroendocrine) cells of the bronchial epithelium."],
+    ["Classic symptoms of carcinoid syndrome include episodic flushing, diarrhea, bronchospasm, and:",
+     ["Right-sided valvular heart disease", "Left-sided valvular heart disease", "Renal stones", "Hypoglycemia"],
+     0, "Carcinoid syndrome classically causes right-sided valvular lesions (TR, PS). Left-sided lesions are rare unless there is a right-to-left shunt or pulmonary carcinoid with direct drainage."]
+  ]],
+  [2, "Pathological features of metastatic pulmonary tumors", [
+    ["The lungs are the most common site of distant metastasis because:",
+     ["They have a dense arterial supply", "The pulmonary capillary bed filters venous blood from all of the systemic circulation", "They are the largest organ", "They lack lymphatics"],
+     1, "Nearly all venous blood passes through pulmonary capillaries, creating a 'metastatic filter' that traps tumor emboli."],
+    ["Multiple bilateral 'cannonball' pulmonary metastases are most characteristically seen with:",
+     ["Lung adenocarcinoma", "Renal cell carcinoma or choriocarcinoma", "Mesothelioma", "Small cell carcinoma"],
+     1, "Large, round 'cannonball' lesions classically result from renal cell carcinoma, choriocarcinoma, or sarcomas."]
+  ]],
+  [3, "Tumors of the pleura, esp. mesothelioma", [
+    ["The dominant etiologic risk factor for malignant pleural mesothelioma is:",
+     ["Smoking alone", "Prior asbestos exposure (often 20-40 years earlier)", "Radon exposure", "Viral infection"],
+     1, "Asbestos exposure is the major cause of mesothelioma, with typical latency of 20-40 years. Smoking does NOT cause mesothelioma but is synergistic for lung cancer risk."],
+    ["Malignant pleural mesothelioma typically presents with:",
+     ["Clear pleural effusion only", "Progressive dyspnea, chest pain, and pleural thickening/rind", "Cavitary lung nodules", "Hemoptysis as a dominant feature"],
+     1, "MPM typically causes unilateral pleural effusion with pleural rind/thickening, chest pain, and dyspnea."]
+  ]]
+]],
+[38, "Self-Study #1: Wheezing", [
+  [1, "HPI/PMH/ROS for wheezing", [
+    ["Which HPI feature most suggests CARDIAC asthma (pulmonary edema) over primary asthma?",
+     ["Exercise-induced wheeze in a 20-year-old", "Nocturnal wheeze with orthopnea, PND, and leg edema in a 70-year-old with CAD", "Wheeze triggered by pollen", "Allergic shiners"],
+     1, "Orthopnea, PND, and peripheral edema in an older patient with cardiac disease strongly suggests pulmonary edema, not primary asthma."],
+    ["Sudden onset of wheezing immediately after eating peanuts suggests:",
+     ["Chronic asthma", "Anaphylaxis or foreign body aspiration", "COPD exacerbation", "CHF"],
+     1, "Sudden wheeze after known exposure should prompt consideration of anaphylaxis or foreign body aspiration; treat with epinephrine/bronchoscopy as appropriate."]
+  ]],
+  [2, "Physical exam for wheezing differentials", [
+    ["Unilateral focal wheezing most strongly suggests:",
+     ["Bilateral asthma", "Endobronchial tumor or foreign body", "Generalized COPD", "Normal variant"],
+     1, "Focal unilateral wheezing is a red flag for a localized airway obstruction—foreign body, endobronchial tumor, mucus plug, or bronchial stenosis."],
+    ["In vocal cord dysfunction, abnormal breath sounds are most audible:",
+     ["Over the chest bases", "Over the neck during inspiration (stridor)", "Over the apices", "Equally throughout"],
+     1, "VCD produces inspiratory stridor audible over the neck, whereas asthma produces expiratory wheeze heard over the chest."]
+  ]],
+  [3, "Differential diagnosis list for wheezing", [
+    ["Which should be included in the differential for a new-onset wheeze in a 55-year-old smoker?",
+     ["Only asthma", "Asthma, COPD, endobronchial malignancy, CHF, and PE", "Only allergy", "Only anxiety"],
+     1, "A new wheeze in an older smoker must prompt a broad DDx including malignancy, COPD, CHF, and PE in addition to primary airway disease."],
+    ["Which is the MOST common cause of episodic wheezing in a young adult with allergies?",
+     ["Lung cancer", "Asthma", "COPD", "Mitral stenosis"],
+     1, "Asthma is by far the most common cause of episodic wheeze in young adults, especially with atopy."]
+  ]],
+  [4, "Tests to distinguish wheezing differentials", [
+    ["Which pulmonary function finding supports a diagnosis of asthma?",
+     ["Fixed obstruction with no response to bronchodilator", "≥12% AND ≥200 mL improvement in FEV1 after a bronchodilator", "Restrictive pattern", "Normal spirometry in all cases"],
+     1, "Asthma is characterized by reversible obstruction: post-bronchodilator FEV1 improvement ≥12% and ≥200 mL."],
+    ["Elevated BNP in a wheezing patient suggests:",
+     ["Asthma", "Cardiac cause (CHF/cardiac asthma)", "Allergic rhinitis", "Bronchitis"],
+     1, "Elevated BNP supports heart failure as the cause of wheeze (pulmonary edema)."]
+  ]],
+  [5, "Diagnostic pathway in wheezing", [
+    ["A 25-year-old with nocturnal cough, episodic wheeze, atopy, and family history of asthma has normal spirometry in clinic. The next best step is:",
+     ["Start long-term oral steroids", "Methacholine challenge test (or exhaled NO / diary)", "Order a CT chest", "No further workup"],
+     1, "Methacholine challenge test can demonstrate airway hyperresponsiveness (≥20% fall in FEV1) when spirometry is normal but asthma is clinically suspected."],
+    ["A 65-year-old smoker has chronic dyspnea and wheezing; spirometry reveals post-bronchodilator FEV1/FVC = 0.58. Most likely diagnosis:",
+     ["Asthma", "COPD", "Restrictive lung disease", "Normal lung function"],
+     1, "Post-bronchodilator FEV1/FVC <0.70 defines COPD in the appropriate clinical setting (symptoms + exposure)."]
+  ]],
+  [6, "Characteristics of final wheeze diagnoses", [
+    ["First-line maintenance therapy for persistent asthma is:",
+     ["Short-acting beta agonist alone", "Inhaled corticosteroid", "Oral corticosteroids daily", "Oral antihistamine"],
+     1, "Current guidelines (GINA) recommend ICS-based controller therapy (e.g., ICS-formoterol) as first-line for persistent asthma, even in mild disease."],
+    ["Immediate treatment of anaphylaxis-induced wheezing is:",
+     ["Oral diphenhydramine", "Intramuscular epinephrine", "Oral prednisone", "SQ heparin"],
+     1, "IM epinephrine (into lateral thigh) is the first-line treatment for anaphylaxis. Antihistamines and steroids are adjuncts, not substitutes."]
+  ]]
+]],
+[39, "Diseases of the External Ear & Middle Ear", [
+  [1, "Anatomy and physiology of the middle ear", [
+    ["Which ossicle of the middle ear is directly connected to the tympanic membrane?",
+     ["Stapes", "Incus", "Malleus", "Cochlea"],
+     2, "The malleus ('hammer') attaches to the TM; it articulates with the incus, which connects to the stapes (at the oval window)."],
+    ["The eustachian tube functions to:",
+     ["Amplify sound by 22:1", "Equalize middle ear pressure with atmospheric pressure", "Drain tears", "Produce endolymph"],
+     1, "The eustachian tube connects the middle ear to the nasopharynx; opening during swallowing equalizes pressure across the TM."]
+  ]],
+  [2, "Functional evaluation of middle ear disease", [
+    ["In a pure CONDUCTIVE hearing loss on the right, the Weber test with a tuning fork placed on the forehead will:",
+     ["Lateralize to the left (unaffected) ear", "Lateralize to the right (affected) ear", "Be heard equally in both ears", "Not be heard at all"],
+     1, "In conductive loss, the Weber lateralizes to the affected ear. In sensorineural loss, it lateralizes to the unaffected ear."],
+    ["A flat (Type B) tympanogram is most consistent with:",
+     ["Normal middle ear", "Middle ear effusion or TM perforation", "Otosclerosis", "Eustachian tube dysfunction without effusion"],
+     1, "Type B (flat) tympanogram indicates loss of TM mobility—classic for middle ear effusion or TM perforation. Type C (negative peak) suggests ETD."]
+  ]],
+  [3, "Diagnosis of middle ear disease", [
+    ["Pneumatic otoscopy is used to assess:",
+     ["Tympanic membrane mobility", "External canal wax", "Cochlear function", "Jaw joint alignment"],
+     0, "Pneumatic otoscopy introduces a puff of air to assess TM mobility—decreased mobility supports otitis media with effusion."],
+    ["Acute otitis media is characterized on otoscopy by:",
+     ["Normal pearly gray TM", "Bulging, erythematous, opaque TM with decreased mobility", "Black TM", "Perforated TM with clear fluid"],
+     1, "Bulging, erythematous, opaque TM with impaired mobility is diagnostic of acute OM; clear middle ear fluid without inflammation suggests OME."]
+  ]],
+  [4, "Medical treatment of middle ear disease", [
+    ["First-line antibiotic for uncomplicated acute otitis media in most children is:",
+     ["Azithromycin", "Amoxicillin (high-dose)", "Ciprofloxacin", "Cefepime"],
+     1, "High-dose amoxicillin (80-90 mg/kg/day) is first-line; amoxicillin-clavulanate is preferred if recent antibiotics or conjunctivitis is present."],
+    ["Watchful waiting without antibiotics is reasonable in which case of AOM?",
+     ["Severe bilateral AOM in a 3-month-old", "Unilateral AOM in an otherwise healthy 2.5-year-old with mild symptoms and follow-up assured", "Toxic-appearing child with high fever", "Any child with perforated TM"],
+     1, "AAP allows observation (48-72 h) in otherwise-healthy children ≥2 yr with unilateral non-severe AOM and reliable follow-up."]
+  ]],
+  [5, "Surgical treatment of middle ear disease", [
+    ["Tympanostomy tube (myringotomy) placement is most commonly indicated for:",
+     ["First episode of AOM in a healthy child", "Recurrent AOM or chronic OME with significant hearing loss", "Cerumen impaction", "Simple TM perforation"],
+     1, "Tympanostomy tubes are indicated for recurrent AOM (≥3 in 6 mo or ≥4 in 12 mo) or chronic OME with hearing impairment."],
+    ["Which procedure is used to repair a chronic tympanic membrane perforation?",
+     ["Stapedectomy", "Tympanoplasty", "Cochlear implantation", "Mastoidectomy"],
+     1, "Tympanoplasty surgically reconstructs the perforated TM using autologous graft (temporalis fascia, cartilage)."]
+  ]],
+  [6, "Anatomy and physiology of the outer ear", [
+    ["The auricle and outer one-third of the external auditory canal are composed primarily of:",
+     ["Bone", "Elastic cartilage with skin", "Muscle", "Fibrous tissue only"],
+     1, "Auricle and outer 1/3 of EAC are elastic cartilage; the inner 2/3 of EAC is bony (temporal bone)."],
+    ["A key protective function of cerumen (earwax) is:",
+     ["Absorbing sound", "Antimicrobial action and trapping debris in the EAC", "Vibration amplification", "Hormone production"],
+     1, "Cerumen has antibacterial/antifungal properties and traps particulate matter, helping protect the EAC."]
+  ]],
+  [7, "Diagnosis of outer ear diseases", [
+    ["Pain on pulling the pinna is highly suggestive of:",
+     ["Middle ear effusion", "Otitis externa", "Cholesteatoma", "Vestibular neuritis"],
+     1, "Tragal or pinna tenderness suggests external ear inflammation (otitis externa), not middle ear disease."],
+    ["Malignant (necrotizing) otitis externa should be suspected in:",
+     ["Children with normal immune function", "Elderly diabetics with severe ear pain, cranial neuropathies, and granulation tissue", "Healthy teen athletes", "Patients after long flight with ear pressure only"],
+     1, "Malignant OE is a serious Pseudomonas infection of the skull base in elderly diabetics or immunocompromised—CT/MRI and IV antipseudomonal antibiotics are needed."]
+  ]],
+  [8, "Treatment of outer ear diseases", [
+    ["First-line topical therapy for uncomplicated bacterial otitis externa is:",
+     ["Oral amoxicillin", "Topical fluoroquinolone ± steroid drops and dry ear precautions", "Oral ibuprofen only", "Intravenous vancomycin"],
+     1, "Topical fluoroquinolone drops (e.g., ciprofloxacin/dexamethasone) + dry ear precautions are first-line."],
+    ["An untreated auricular hematoma from trauma can result in:",
+     ["Otosclerosis", "Cauliflower ear deformity", "Ménière's disease", "Facial nerve palsy"],
+     1, "Untreated auricular hematomas deprive the cartilage of perichondrial blood supply → fibrosis/neocartilage → cauliflower ear. Drain + bolster early."]
+  ]]
+]],
+[40, "Clinical Evaluation of Pulmonary Nodules & Neoplastic Lung Disease I", [
+  [1, "Define pulmonary nodule", [
+    ["A pulmonary nodule is defined as a rounded opacity measuring:",
+     ["≤3 cm, surrounded by aerated lung, without lymphadenopathy or effusion", ">3 cm, with hilar adenopathy", "Any size with cavitation", "Any size with calcification"],
+     0, "A pulmonary NODULE is ≤3 cm; larger lesions are termed pulmonary masses, which have a higher likelihood of malignancy."],
+    ["A pulmonary MASS is differentiated from a nodule when size exceeds:",
+     ["1 cm", "2 cm", "3 cm", "5 cm"],
+     2, "By definition, lesions >3 cm are called pulmonary masses and carry a much higher probability of malignancy."]
+  ]],
+  [2, "Clinical manifestations of pulmonary nodule", [
+    ["Most pulmonary nodules are:",
+     ["Symptomatic with hemoptysis", "Asymptomatic and found incidentally on imaging", "Associated with fever", "Associated with weight loss"],
+     1, "Most pulmonary nodules are asymptomatic incidental findings; symptoms typically indicate larger or more advanced disease."],
+    ["A patient with a pulmonary nodule who develops cough, hemoptysis, weight loss, and clubbing most likely has:",
+     ["An incidental benign granuloma", "An advanced malignant process", "Asthma", "COPD"],
+     1, "Systemic symptoms (weight loss, clubbing, hemoptysis) in the presence of a nodule raise strong concern for malignancy."]
+  ]],
+  [3, "Evaluation of pulmonary nodule", [
+    ["The FIRST step in evaluating a newly discovered pulmonary nodule is to:",
+     ["Biopsy immediately", "Compare with any previous imaging to assess stability", "Start empiric antibiotics", "Surgical resection"],
+     1, "Comparing with prior imaging is crucial—stability for ≥2 years (solid nodule) strongly suggests benignity and often avoids further workup."],
+    ["Which CT feature is MOST concerning for malignancy in a solitary pulmonary nodule?",
+     ["Smooth margins", "Popcorn calcification", "Spiculated (stellate) margins", "Laminated calcification"],
+     2, "Spiculated margins correlate strongly with malignancy. Benign features include popcorn, central/diffuse/laminated calcifications."]
+  ]],
+  [4, "Management of pulmonary nodules", [
+    ["According to the Fleischner Society guidelines, a solid nodule measuring 5 mm in a low-risk patient typically requires:",
+     ["Immediate biopsy", "No routine CT follow-up", "PET-CT scan", "Resection"],
+     1, "Small (<6 mm) solid nodules in low-risk patients do not require routine follow-up per current Fleischner guidelines."],
+    ["A 10-mm solid nodule in a smoker should typically undergo:",
+     ["No further imaging", "CT +/- PET-CT; consider biopsy or surgical resection based on probability", "Observation for 5 years", "Empiric chemotherapy"],
+     1, "Nodules >8 mm in higher-risk patients warrant CT characterization, PET-CT, and tissue sampling or surgical resection depending on probability."]
+  ]],
+  [5, "Epidemiology and etiology of lung cancer", [
+    ["Approximately what percentage of lung cancer cases are attributable to smoking?",
+     ["20%", "50%", "85%", "100%"],
+     2, "About 85% of lung cancer cases are attributable to tobacco smoking; radon is the #2 cause overall."],
+    ["The incidence of lung adenocarcinoma in women, especially non-smokers, is:",
+     ["Decreasing rapidly", "Rising due to various factors including environmental exposures", "Unchanged", "Seen only in men"],
+     1, "Lung adenocarcinoma incidence in women (including never-smokers) has been increasing, partially due to environmental factors and genetic drivers (EGFR mutations)."]
+  ]],
+  [6, "Correlate histology/pathology and clinical manifestations", [
+    ["Keratin pearls and intercellular bridges on histology characterize:",
+     ["Adenocarcinoma", "Squamous cell carcinoma", "Small cell carcinoma", "Large cell carcinoma"],
+     1, "Keratin pearls and intercellular bridges are hallmark histologic features of squamous cell carcinoma."],
+    ["Small, round blue cells with neuroendocrine markers and dense-core granules on electron microscopy describe:",
+     ["Adenocarcinoma", "Squamous cell carcinoma", "Small cell lung carcinoma", "Mesothelioma"],
+     2, "SCLC is characterized by small, round blue cells (scant cytoplasm, nuclear molding), neuroendocrine differentiation (chromogranin, synaptophysin)."]
+  ]],
+  [7, "Clinical evaluation, staging, and treatment of lung cancer", [
+    ["First-line therapy for a patient with resectable stage I NSCLC and acceptable pulmonary function is:",
+     ["Chemotherapy alone", "Radiation alone", "Surgical lobectomy with mediastinal lymph node dissection", "Watchful waiting"],
+     2, "Anatomic lobectomy with systematic mediastinal lymph node evaluation is the standard curative therapy for resectable stage I NSCLC."],
+    ["For metastatic NSCLC with an EGFR-activating mutation, first-line therapy is:",
+     ["Platinum-based chemotherapy", "EGFR tyrosine kinase inhibitor (e.g., osimertinib)", "Radiation only", "Surgery"],
+     1, "Osimertinib is the preferred first-line targeted therapy for EGFR-mutant metastatic NSCLC, with survival superior to chemotherapy."]
+  ]],
+  [8, "Systemic manifestations of lung cancer", [
+    ["Hypertrophic pulmonary osteoarthropathy (HPO) is characterized by:",
+     ["Clubbing, periostitis, and painful joint swelling, most often with NSCLC (esp. adenocarcinoma)", "Hypokalemia and alkalosis", "Hemolytic anemia", "Seizures"],
+     0, "HPO = clubbing + periostitis of long bones + symmetric painful arthropathy, most often linked with NSCLC (especially adenocarcinoma)."],
+    ["Cushing syndrome from ectopic ACTH production is most classically associated with:",
+     ["Adenocarcinoma", "Large cell carcinoma", "Small cell lung carcinoma", "Bronchial carcinoid (much less common)"],
+     2, "SCLC is the classic cause of ectopic ACTH production → Cushing syndrome (though carcinoid can also cause it)."]
+  ]]
+]],
+[41, "Clinical Evaluation of Pulmonary Nodules & Neoplastic Lung Disease II", [
+  [1, "Review (see prior lecture)", [
+    ["Which patient meets USPSTF criteria for annual low-dose CT lung cancer screening?",
+     ["A 45-year-old with 10 pack-year history who currently smokes", "A 62-year-old with 30 pack-year history who quit 10 years ago", "A 85-year-old with 40 pack-year history in hospice", "A 30-year-old never-smoker with strong family history"],
+     1, "USPSTF 2021: annual LDCT for adults 50-80 yr with ≥20 pack-years who currently smoke or quit within the past 15 years."],
+    ["PET-CT has reduced sensitivity for which lesion type?",
+     ["Large squamous cell tumors", "Ground-glass nodules and carcinoid tumors", "Infected cavitary lesions", "Large adenocarcinomas"],
+     1, "PET can miss indolent lesions with low FDG uptake—subsolid/ground-glass adenocarcinomas in situ and well-differentiated carcinoids."]
+  ]]
+]],
+[42, "Cough", [
+  [1, "HPI/PMH/ROS for cough", [
+    ["Chronic cough is defined as cough lasting at least:",
+     ["1 week", "3 weeks", "8 weeks", "6 months"],
+     2, "Cough duration: acute <3 wk, subacute 3-8 wk, chronic >8 weeks."],
+    ["A cough triggered or worsened by ACE inhibitor therapy typically resolves:",
+     ["Immediately with dose increase", "Within days to weeks after stopping the ACE inhibitor", "Only with lifetime steroids", "Only after heart catheterization"],
+     1, "ACE inhibitor cough (bradykinin-mediated) typically resolves within days to weeks of discontinuation. ARBs do not cause this effect."]
+  ]],
+  [2, "Physical exam features for cough", [
+    ["Cobblestoning of the posterior pharynx and clear postnasal drip suggests:",
+     ["Asthma", "Upper airway cough syndrome (postnasal drip)", "GERD", "Lung cancer"],
+     1, "Cobblestoning and PND are characteristic findings of UACS (postnasal drip), the #1 cause of chronic cough."],
+    ["Clubbing on exam of a chronic cough patient should prompt evaluation for:",
+     ["Simple viral bronchitis", "Lung cancer, bronchiectasis, ILD, or cystic fibrosis", "Allergic rhinitis", "Common cold"],
+     1, "Digital clubbing is associated with chronic pulmonary disease: lung cancer, bronchiectasis, ILD, CF, lung abscess, among others."]
+  ]],
+  [3, "DDx list for cough", [
+    ["The 'big three' causes of chronic cough in non-smoking adults with a normal CXR are:",
+     ["Asthma, GERD, pneumonia", "Upper airway cough syndrome, asthma, GERD", "Lung cancer, pulmonary embolism, ILD", "TB, CHF, COPD"],
+     1, "UACS (postnasal drip), asthma (including cough-variant), and GERD are the 'big three' causes of chronic cough with normal CXR."],
+    ["Pertussis should be suspected in an adult with:",
+     ["Fever only", "Paroxysms of cough followed by inspiratory whoop or post-tussive emesis, especially lasting weeks", "Mild throat clearing only", "Brief hoarseness"],
+     1, "Adult pertussis presents with paroxysms, post-tussive emesis or whooping; often missed, it can cause protracted cough lasting weeks."]
+  ]],
+  [4, "Tests to distinguish differentials of cough", [
+    ["A patient with chronic cough has a normal CXR, no postnasal drip, and a negative methacholine challenge. Next best step:",
+     ["Reassurance only", "Empiric PPI trial for GERD, then consider pH monitoring", "Immediate bronchoscopy", "Start oral prednisone"],
+     1, "In chronic cough, after UACS and asthma are excluded, empiric PPI for GERD is reasonable before invasive testing."],
+    ["A chronic cough patient has fever, hemoptysis, weight loss, and a cavitary upper-lobe infiltrate. Appropriate diagnostic test:",
+     ["Sputum for AFB smear and mycobacterial culture/PCR", "PPI trial", "IgE measurement", "Allergy skin testing"],
+     0, "Cavitary upper-lobe disease with systemic symptoms mandates evaluation for tuberculosis (AFB smear, NAAT, culture)."]
+  ]],
+  [5, "Diagnostic pathway in cough", [
+    ["A 48-year-old with chronic cough, heartburn, and sour taste that worsens after meals is most likely to have:",
+     ["Asthma", "Gastroesophageal reflux-induced cough", "Lung cancer", "Allergic rhinitis"],
+     1, "Chronic cough with postprandial/nocturnal regurgitation strongly points to GERD; empiric PPI trial is both diagnostic and therapeutic."],
+    ["A chronic cough in a smoker that is new, associated with hemoptysis and weight loss, should first prompt:",
+     ["Empiric bronchodilators", "CT chest and bronchoscopy to evaluate for malignancy", "No workup", "Oral antihistamines"],
+     1, "A new cough with hemoptysis in a smoker must be evaluated for malignancy with CT chest and bronchoscopy."]
+  ]],
+  [6, "Characteristics of final cough diagnoses", [
+    ["First-line therapy for UACS-related chronic cough is:",
+     ["Oral PPI", "First-generation antihistamine + pseudoephedrine; intranasal corticosteroid for allergic component", "Long-term steroids", "Antibiotics"],
+     1, "For nonallergic UACS, 1st-gen antihistamine/decongestant combinations are often first-line; intranasal steroids for allergic rhinitis."],
+    ["First-line therapy for GERD-induced cough is:",
+     ["Twice-daily PPI with lifestyle modifications for 8 weeks", "Immediate fundoplication", "H1 antihistamines", "β-blocker"],
+     0, "Empiric BID PPI for ≥8 weeks with lifestyle modification (weight loss, avoiding late meals) is first-line."]
+  ]]
+]],
+[43, "Antihistamines", [
+  [1, "Histamine synthesis, storage, metabolism, elimination", [
+    ["Histamine is synthesized from which amino acid precursor?",
+     ["Tyrosine", "L-histidine by histidine decarboxylase", "Tryptophan", "Phenylalanine"],
+     1, "Histamine is formed by decarboxylation of L-histidine via histidine decarboxylase, then stored in mast cells, basophils, and ECL cells."],
+    ["The principal enzymes that degrade histamine are:",
+     ["Monoamine oxidase and catechol-O-methyltransferase", "Histamine-N-methyltransferase and diamine oxidase", "Acetylcholinesterase", "Alkaline phosphatase"],
+     1, "Histamine is metabolized by histamine-N-methyltransferase and diamine oxidase to inactive metabolites excreted in urine."]
+  ]],
+  [2, "Mechanism of histamine release", [
+    ["In type I hypersensitivity, histamine is released when:",
+     ["IgG binds complement on mast cells", "Allergen cross-links IgE bound to FcεRI on mast cells/basophils", "T cells directly contact antigen", "Viruses enter mast cells"],
+     1, "Cross-linking of allergen-specific IgE bound to FcεRI on mast cells triggers Ca2+ influx and degranulation releasing histamine and other mediators."],
+    ["Which drug can cause non-immunologic (direct) mast cell degranulation and histamine release?",
+     ["Acetaminophen", "Vancomycin (rapid infusion — 'red man syndrome')", "Beta-blockers", "Aspirin"],
+     1, "Rapid IV vancomycin infusion directly degranulates mast cells, producing flushing/pruritus (red man syndrome); slow infusion minimizes risk."]
+  ]],
+  [3, "Histamine receptors and signaling", [
+    ["The H1 receptor is coupled to which G protein/signaling pathway?",
+     ["Gs → ↑cAMP", "Gi → ↓cAMP", "Gq → IP3/DAG → ↑Ca2+", "Direct ion channel"],
+     2, "H1 uses Gq → PLC → IP3/DAG → intracellular Ca2+ → smooth muscle contraction, vasodilation, pruritus, wakefulness."],
+    ["The H2 receptor is most important for:",
+     ["Gastric acid secretion by parietal cells (via Gs → ↑cAMP)", "Bronchoconstriction", "CNS wakefulness", "Mast cell activation"],
+     0, "H2 receptors on gastric parietal cells couple to Gs → ↑cAMP → stimulation of acid secretion. H2 blockers reduce gastric acid."]
+  ]],
+  [4, "1st and 2nd gen H1 blockers and major AEs", [
+    ["Which is a classic FIRST-generation H1 antihistamine?",
+     ["Loratadine", "Fexofenadine", "Diphenhydramine", "Cetirizine"],
+     2, "Diphenhydramine (Benadryl) is a classic first-generation antihistamine. 2nd-gen examples: loratadine, desloratadine, fexofenadine, cetirizine."],
+    ["The primary adverse effects of first-generation H1 antihistamines include:",
+     ["Bradycardia only", "Sedation and anticholinergic effects (dry mouth, urinary retention, blurry vision)", "Renal failure", "Pancreatitis"],
+     1, "1st-gen antihistamines cross the BBB and are anticholinergic → sedation, dry mouth, urinary retention, blurry vision, confusion in elderly."]
+  ]],
+  [5, "Therapeutic use of 1st vs 2nd gen H1 blockers", [
+    ["For daytime treatment of chronic allergic rhinitis in an adult, the preferred class is:",
+     ["1st-generation antihistamines", "2nd-generation antihistamines (loratadine, fexofenadine, cetirizine)", "H2 blockers", "Opioids"],
+     1, "2nd-gen antihistamines provide effective allergy relief without sedation; they are preferred for daytime use."],
+    ["Which antihistamine is commonly used for motion sickness because of its anticholinergic effect?",
+     ["Fexofenadine", "Meclizine or dimenhydrinate", "Cetirizine", "Loratadine"],
+     1, "Meclizine and dimenhydrinate (first-generation antihistamines with anticholinergic effect) are standard for motion sickness/vertigo."]
+  ]],
+  [6, "H2 blockers: uses and adverse effects", [
+    ["A major indication for H2 receptor blockers is:",
+     ["Allergic rhinitis", "GERD/peptic ulcer disease (reducing gastric acid)", "Hypertension", "Depression"],
+     1, "H2 blockers (famotidine, cimetidine) reduce gastric acid secretion and treat GERD, PUD, and stress ulcer prophylaxis."],
+    ["Which H2 blocker is notable for significant CYP450 inhibition and anti-androgenic side effects (gynecomastia, impotence)?",
+     ["Famotidine", "Nizatidine", "Cimetidine", "Ranitidine (withdrawn)"],
+     2, "Cimetidine inhibits multiple CYP enzymes (warfarin, phenytoin, theophylline interactions) and has antiandrogen effects. Famotidine is usually preferred."]
+  ]]
+]],
+[44, "Nutrition and Respiratory Conditions", [
+  [1, "Nutritional guidelines for healthy respiratory systems", [
+    ["General dietary recommendations for lung health include:",
+     ["High refined carbohydrate intake", "Emphasis on fruits, vegetables, whole grains, lean protein, and healthy fats", "Minimal hydration", "High saturated fat intake"],
+     1, "A diet rich in fruits/vegetables, whole grains, lean protein, omega-3 fats, and adequate hydration supports lung health and limits inflammation."],
+    ["Which micronutrient deficiency has been most frequently associated with increased risk of respiratory infection and asthma exacerbation?",
+     ["Vitamin D", "Vitamin K", "Calcium", "Iodine"],
+     0, "Low vitamin D is linked with worse asthma control and more frequent respiratory infections; supplementation may reduce exacerbations in deficient patients."]
+  ]],
+  [2, "Malnutrition and respiratory disease", [
+    ["Malnutrition impairs respiratory function primarily by:",
+     ["Decreasing respiratory muscle strength and impairing immune defense", "Increasing FEV1", "Strengthening the diaphragm", "Improving mucociliary clearance"],
+     0, "Protein-calorie malnutrition reduces respiratory muscle mass (including diaphragm), weakens cough, and impairs immunity—raising infection risk."],
+    ["In COPD, low body mass index is associated with:",
+     ["Improved survival", "Increased mortality (incorporated into the BODE index)", "No effect on prognosis", "Better response to steroids"],
+     1, "Low BMI in COPD independently predicts mortality; the BODE index (BMI, Obstruction, Dyspnea, Exercise) incorporates BMI as a major component."]
+  ]],
+  [3, "Asthma/COVID-19 and obesity", [
+    ["Obesity tends to worsen asthma via which mechanism?",
+     ["Improved diaphragm movement", "Mechanical restriction, systemic inflammation, and reduced ICS responsiveness", "Increased airway lumen", "Enhanced ciliary function"],
+     1, "Obesity contributes to asthma via mechanical restriction, chronic low-grade inflammation (adipokines), and reduced responsiveness to inhaled corticosteroids."],
+    ["Obesity is a recognized major risk factor for:",
+     ["Mild COVID-19 only", "Severe COVID-19 with need for hospitalization and mechanical ventilation", "Decreased SARS-CoV-2 infection rates", "No effect on COVID-19 course"],
+     1, "Obesity is a well-established risk factor for severe COVID-19, including ICU admission, mechanical ventilation, and death."]
+  ]],
+  [4, "Nutrition interventions in complex respiratory conditions", [
+    ["A COPD patient with CO2 retention may benefit from a diet with:",
+     ["High refined carbohydrate load", "Lower carbohydrate and moderate-higher fat intake (reduces RQ and CO2 production)", "No protein", "Zero fat"],
+     1, "Carbohydrate metabolism has RQ ~1.0 (more CO2); moderate-fat, lower-carb meals (and small frequent meals) can help reduce CO2 load in hypercapnic COPD."],
+    ["Patients with cystic fibrosis typically require which dietary modifications?",
+     ["Low-fat, low-protein diet", "High-calorie, high-fat diet with pancreatic enzyme replacement and fat-soluble vitamins", "Sodium restriction", "Protein restriction"],
+     1, "CF patients require hypercaloric, high-fat diets, pancreatic enzyme replacement (PERT), and supplementation of fat-soluble vitamins (ADEK)."]
+  ]],
+  [5, "Dietary nutrients/functional foods helpful in treatment", [
+    ["Omega-3 fatty acids may benefit respiratory disease through:",
+     ["Pro-inflammatory effect", "Anti-inflammatory action via resolvins and protectins", "Bronchoconstriction", "Iron overload"],
+     1, "Omega-3 PUFAs (EPA/DHA) produce anti-inflammatory lipid mediators (resolvins, protectins) which may help in chronic inflammatory lung conditions."],
+    ["Magnesium has shown acute benefit in which respiratory condition?",
+     ["Severe asthma exacerbation (IV magnesium sulfate)", "Mild viral URI", "Chronic bronchitis", "Allergic rhinitis"],
+     0, "IV magnesium sulfate is an adjunct therapy in severe asthma exacerbations unresponsive to initial bronchodilators and corticosteroids."]
+  ]]
+]],
+[45, "Nutrition Support for Critical Illness", [
+  [1, "Variations in nutrient requirements during metabolic stress", [
+    ["Critical illness typically produces which metabolic state?",
+     ["Anabolic", "Catabolic with insulin resistance and hyperglycemia", "Dormant", "Euglycemic"],
+     1, "Metabolic stress of critical illness produces catabolism with insulin resistance, hyperglycemia, negative nitrogen balance, and increased protein needs."],
+    ["Typical energy requirement in critically ill adults is approximately:",
+     ["10 kcal/kg/day", "25-30 kcal/kg/day", "50-60 kcal/kg/day", "100 kcal/kg/day"],
+     1, "General target: 25-30 kcal/kg/day; indirect calorimetry is the gold standard to individualize energy needs."]
+  ]],
+  [2, "Role of nutrition support in critical illness", [
+    ["Which is an evidence-based benefit of early appropriate nutrition support in the ICU?",
+     ["Elimination of all infections", "Preservation of lean body mass and immune function; reduced infectious complications", "Complete prevention of organ failure", "Replacement for vasopressors"],
+     1, "Appropriate nutrition support preserves lean body mass, supports gut mucosal integrity and immunity, and reduces infectious complications."],
+    ["Early enteral nutrition in the ICU is typically initiated within:",
+     ["1 hour of admission", "24-48 hours of ICU admission if GI tract is functional", "1 week of admission", "Only after hospital discharge"],
+     1, "SCCM/ASPEN guidelines recommend initiating enteral feeding within 24-48 hours of ICU admission when hemodynamically stable and GI tract is functional."]
+  ]],
+  [3, "Enteral vs parenteral nutrition", [
+    ["Enteral nutrition is preferred over parenteral nutrition in most critically ill patients because it:",
+     ["Is more expensive", "Preserves gut mucosal integrity, has fewer infectious complications, and is less costly", "Eliminates all nutritional deficiencies immediately", "Requires central venous access"],
+     1, "Enteral feeding maintains gut barrier function, reduces bacterial translocation and infection, and is less expensive than parenteral nutrition."],
+    ["An appropriate indication for parenteral nutrition is:",
+     ["Functional bowel with mild nausea", "Non-functioning GI tract with expected inability to meet needs enterally for >7 days", "Severe malnutrition that is unrelated to GI function", "First-line in all ICU admissions"],
+     1, "PN is indicated when enteral feeding is not possible or inadequate (e.g., prolonged ileus, short bowel, bowel obstruction, severe pancreatitis with intolerance)."]
+  ]],
+  [4, "Select appropriate nutrition support therapies", [
+    ["A critically ill patient with functioning gut but unable to take oral nutrition is best managed with:",
+     ["Peripheral parenteral nutrition", "Enteral nutrition via NG or post-pyloric tube", "Oral high-calorie supplements only", "TPN via central line"],
+     1, "Enteral nutrition via NG or post-pyloric feeding tube is preferred when the gut is functional but oral intake is inadequate."],
+    ["Target glycemic range for most critically ill patients is:",
+     ["60-90 mg/dL", "140-180 mg/dL", "200-300 mg/dL", ">250 mg/dL"],
+     1, "A glucose range of 140-180 mg/dL is recommended in most ICU patients—avoiding both hypoglycemia and significant hyperglycemia."]
+  ]],
+  [5, "Refeeding syndrome", [
+    ["Refeeding syndrome is characterized by:",
+     ["Hyperphosphatemia, hyperkalemia, hypermagnesemia", "Severe hypophosphatemia, hypokalemia, and hypomagnesemia with thiamine deficiency upon reintroduction of nutrition", "Severe hypercalcemia", "Hyperthyroidism"],
+     1, "Insulin release upon feeding drives intracellular shifts of phosphate, potassium, magnesium → severe electrolyte deficiencies; thiamine demand also rises."],
+    ["Which patient is at HIGHEST risk for refeeding syndrome?",
+     ["Patient with BMI 28 and normal intake", "Patient with BMI 14, severe weight loss, chronic alcoholism, and minimal intake for 2 weeks", "Patient who skipped one meal", "Patient eating a high-carb diet"],
+     1, "Major risk criteria: BMI <16, >15% weight loss, minimal intake ≥10 days, alcoholism, anorexia nervosa. Advance calories slowly and replete electrolytes/thiamine."]
+  ]]
+]],
+[46, "ARDS and Management of Respiratory Failure", [
+  [1, "Acute respiratory failure definition, etiology, treatment", [
+    ["Type 1 (hypoxemic) respiratory failure is defined by:",
+     ["PaO2 <60 mmHg on room air with normal/low PaCO2", "PaCO2 >50 mmHg with normal PaO2", "Normal PaO2 and PaCO2", "Elevated pH only"],
+     0, "Type 1 respiratory failure: hypoxemia (PaO2 <60 mmHg) with normal or low PaCO2. Type 2 involves hypercapnia (PaCO2 >50 mmHg)."],
+    ["A COPD patient presents with acute respiratory failure and PaCO2 of 65 mmHg, pH 7.28. Most appropriate initial ventilatory support:",
+     ["High-flow O2 only", "Noninvasive BiPAP", "Immediate tracheostomy", "Observation"],
+     1, "BiPAP reduces work of breathing and CO2 retention in COPD exacerbation with acute respiratory acidosis; proven to reduce mortality and intubation."]
+  ]],
+  [2, "ARDS pathogenesis, DDx, etiology, treatment", [
+    ["The hallmark pathologic finding in the exudative phase of ARDS is:",
+     ["Granulomas", "Diffuse alveolar damage with hyaline membranes", "Caseous necrosis", "Chronic bronchiectasis"],
+     1, "Diffuse alveolar damage with hyaline membranes, capillary leak, and protein-rich alveolar edema defines the exudative phase of ARDS."],
+    ["Which is an established ventilator strategy for ARDS?",
+     ["High tidal volume (15 mL/kg)", "Low tidal volume (4-6 mL/kg IBW) with plateau pressure ≤30 cm H2O", "No PEEP", "Avoid all sedation"],
+     1, "ARDSNet low-tidal-volume ventilation (4-6 mL/kg IBW, Pplat ≤30) reduces mortality in ARDS; prone positioning helps in severe ARDS."]
+  ]],
+  [3, "Differentiate ARDS from acute lung injury", [
+    ["The Berlin definition of ARDS replaced 'acute lung injury' and requires bilateral opacities that are:",
+     ["Unilateral and lobar", "Bilateral and not fully explained by cardiac failure or fluid overload", "Only in one lobe", "Visible only on MRI"],
+     1, "Berlin criteria: onset ≤1 wk, bilateral opacities not fully explained by cardiac failure/overload, PaO2/FiO2 ≤300 on PEEP ≥5. Severity stratified by PaO2/FiO2 ratio."],
+    ["Under the Berlin definition, severe ARDS is characterized by PaO2/FiO2 ≤:",
+     ["300", "200", "100", "50"],
+     2, "Berlin severity: mild 200-300, moderate 100-200, severe ≤100 (all on PEEP ≥5)."]
+  ]],
+  [4, "Sepsis definition, pathogenesis, treatment", [
+    ["Sepsis-3 defines sepsis as:",
+     ["Any infection", "Life-threatening organ dysfunction from a dysregulated host response to infection (SOFA ↑ ≥2)", "Hypotension only", "Fever alone"],
+     1, "Sepsis-3: infection + acute organ dysfunction (SOFA increase ≥2). qSOFA is a bedside screening tool (≥2 of: RR ≥22, SBP ≤100, altered mental status)."],
+    ["The Hour-1 Surviving Sepsis Campaign bundle includes:",
+     ["Measure lactate, blood cultures, broad-spectrum antibiotics, 30 mL/kg crystalloid for hypotension/lactate ≥4, and vasopressors for persistent hypotension", "Steroids only", "Immediate dialysis", "Watchful waiting"],
+     0, "Surviving Sepsis Campaign Hour-1 bundle: measure lactate, draw blood cultures, broad-spectrum antibiotics, 30 mL/kg crystalloid for hypotension/lactate ≥4, vasopressors if MAP <65 after fluid."]
+  ]]
+]],
+[47, "Pulmonary Embolism", [
+  [1, "Define PE: causes, risk factors, epidemiology", [
+    ["The vast majority of pulmonary emboli originate from:",
+     ["Upper extremity thromboses", "Deep venous thrombosis of the lower extremities", "Right atrial myxoma", "Coronary artery plaque"],
+     1, "Most PEs originate from proximal lower-extremity deep veins; upper extremity DVT is less common but possible (central lines, malignancy, PICC)."],
+    ["Virchow's triad for thrombosis consists of:",
+     ["Stasis, hypercoagulability, endothelial injury", "Fever, hypotension, tachycardia", "Cough, dyspnea, chest pain", "Thrombocytopenia, anemia, leukocytosis"],
+     0, "Virchow's triad: stasis (immobility), hypercoagulability (malignancy, OCPs, thrombophilia), endothelial injury (surgery, trauma)."]
+  ]],
+  [2, "Pathophysiology, clinical manifestations, complications of PE", [
+    ["The most common presenting symptom of PE is:",
+     ["Hemoptysis", "Dyspnea (sudden or progressive)", "Syncope", "Arm pain"],
+     1, "Dyspnea is the most frequent symptom of PE. Other common findings: tachypnea, tachycardia, pleuritic chest pain, hypoxemia."],
+    ["Massive PE with hemodynamic collapse is primarily caused by:",
+     ["Aortic dissection", "Acute right ventricular failure due to sudden pulmonary vascular obstruction", "Severe anemia", "Aortic stenosis"],
+     1, "Massive PE obstructs pulmonary vasculature → acute RV failure (pressure overload), ↓LV preload, cardiogenic shock, and death if untreated."]
+  ]],
+  [3, "Diagnostic tests and criteria for PE", [
+    ["A patient with a Wells score low (<2) and PERC rule entirely negative:",
+     ["Must have CTPA anyway", "Can usually avoid further PE-specific testing", "Should start anticoagulation empirically", "Needs immediate thrombolytics"],
+     1, "Low Wells + PERC negative has a very low post-test probability; further testing is usually not needed. D-dimer is used for low-moderate probability."],
+    ["D-dimer testing is most useful when:",
+     ["High pretest probability — rule in", "Low or moderate pretest probability — rule out if negative (high sensitivity)", "Making a definitive diagnosis of PE", "Assessing PE severity"],
+     1, "D-dimer has high sensitivity but low specificity; a negative test rules out PE in low-intermediate pretest probability patients."]
+  ]],
+  [4, "Management and treatment of PE", [
+    ["A hemodynamically stable patient with newly diagnosed PE and no contraindications is best treated with:",
+     ["Observation only", "Therapeutic anticoagulation (DOAC like apixaban or rivaroxaban)", "Immediate surgical embolectomy", "Antibiotics"],
+     1, "DOACs (apixaban, rivaroxaban) are first-line for uncomplicated PE. Alternatives: LMWH → warfarin. Duration ≥3 months, longer for unprovoked/cancer."],
+    ["Systemic thrombolysis is generally indicated for PE in:",
+     ["Any PE, regardless of stability", "Massive PE (hemodynamic instability/shock) without contraindication", "Asymptomatic subsegmental PE", "Chronic PE"],
+     1, "Systemic tPA is indicated for massive PE with hemodynamic compromise. Submassive PE therapy is individualized. Always weigh bleeding risk."]
+  ]],
+  [5, "Prevention strategies and follow-up for PE", [
+    ["Which prophylaxis strategy is used for most hospitalized medical patients at increased VTE risk?",
+     ["Warfarin for 6 months", "LMWH (e.g., enoxaparin) or heparin, and/or mechanical SCDs", "Aspirin 81 mg", "No prophylaxis"],
+     1, "Pharmacologic prophylaxis with LMWH (or UFH) and/or mechanical devices (SCDs) is standard for hospitalized patients at VTE risk per Padua/Caprini scores."],
+    ["A patient with an unprovoked, first PE should generally receive anticoagulation for:",
+     ["3 months, then reassess (many are continued indefinitely based on bleeding risk)", "1 week", "10 years exactly", "No anticoagulation needed"],
+     0, "First unprovoked PE = at least 3 months anticoagulation with reassessment for extended or indefinite therapy based on recurrence vs bleeding risk."]
+  ]]
+]],
+[48, "Tuberculosis, Including Atypical Mycobacteria", [
+  [1, "Why TB remains a significant health threat", [
+    ["Approximately what fraction of the world's population has latent TB infection?",
+     ["~1/10", "~1/4", "~1/2", "~1/100"],
+     1, "Roughly one-quarter of the world's population has latent TB, providing a vast reservoir for reactivation and transmission."],
+    ["Which factor most increases the global burden of TB?",
+     ["Widespread BCG vaccination in the United States", "HIV co-infection, crowded living conditions, and multidrug-resistant strains", "Widespread screening in developed nations", "Reduced travel"],
+     1, "HIV co-infection, poverty/overcrowding, and MDR-TB all contribute to TB's continuing global impact."]
+  ]],
+  [2, "Pathogenesis, transmission, diagnosis, and treatment of TB", [
+    ["TB is transmitted primarily via:",
+     ["Fecal-oral route", "Airborne droplet nuclei from coughing patients", "Mosquito bite", "Sexual contact"],
+     1, "TB is transmitted via aerosolized droplet nuclei from infectious individuals (especially coughing pulmonary TB)."],
+    ["Standard initial treatment regimen for drug-susceptible active pulmonary TB is:",
+     ["Isoniazid alone for 6 months", "Rifampin, isoniazid, pyrazinamide, ethambutol (RIPE) for 2 months, then rifampin + isoniazid for 4 more months", "Doxycycline for 2 weeks", "Amoxicillin for 10 days"],
+     1, "Six-month regimen: RIPE × 2 months (intensive) then RI × 4 months (continuation) for drug-susceptible pulmonary TB."]
+  ]],
+  [3, "Why multidrug-resistant TB is increasing", [
+    ["MDR-TB is defined as TB resistant to at least:",
+     ["Isoniazid alone", "Isoniazid AND rifampin", "Ethambutol alone", "Pyrazinamide alone"],
+     1, "MDR-TB is resistant to isoniazid + rifampin, the two most effective first-line drugs."],
+    ["Main drivers of MDR-TB emergence include:",
+     ["Complete adherence to therapy", "Incomplete/inadequate treatment, nonadherence, and monotherapy", "Use of BCG vaccine", "Short hospitalization"],
+     1, "Inadequate or incomplete treatment, poor adherence, and monotherapy generate resistance; drug quality, HIV, and transmission in crowded settings also contribute."]
+  ]],
+  [4, "Treatment regimens and side effects", [
+    ["Isoniazid (INH) is most commonly associated with which neurotoxic side effect that is prevented by pyridoxine?",
+     ["Optic neuritis", "Peripheral neuropathy", "Sensorineural hearing loss", "Ototoxicity"],
+     1, "INH can cause peripheral neuropathy via interference with B6 metabolism; pyridoxine (B6) supplementation prevents this."],
+    ["Ethambutol's most characteristic toxicity is:",
+     ["Red-orange discoloration of body fluids", "Optic neuritis (red-green color blindness, visual changes)", "Hepatotoxicity", "Renal failure"],
+     1, "Ethambutol causes dose-related optic neuritis with decreased visual acuity and red-green color blindness; monitor vision during therapy."]
+  ]],
+  [5, "Atypical mycobacteria in immunosuppressed", [
+    ["Which atypical mycobacterium is most associated with disseminated disease in HIV patients with CD4 <50?",
+     ["Mycobacterium avium complex (MAC)", "Mycobacterium kansasii", "Mycobacterium marinum", "Mycobacterium leprae"],
+     0, "Disseminated MAC classically occurs in HIV patients with CD4 <50; prophylaxis is considered at CD4 <50."],
+    ["Mycobacterium marinum is classically associated with:",
+     ["Pneumonia in farmers", "Granulomatous skin infection from fish tank/pool exposure", "Disseminated infection in infants", "GI disease"],
+     1, "M. marinum causes 'fish tank granuloma'—skin/soft tissue nodules on extremities after aquatic exposure."]
+  ]],
+  [6, "Clinical features of atypical mycobacterial diseases", [
+    ["'Lady Windermere syndrome' refers to MAC pulmonary infection characterized by:",
+     ["Fibrocavitary disease in alcoholic men", "Nodular/bronchiectatic disease predominantly in the right middle lobe and lingula in older nonsmoking women", "Disseminated disease in infants", "Sinusitis in immunocompetent young adults"],
+     1, "MAC 'Lady Windermere' pattern: older women without underlying lung disease, RML/lingular nodular/bronchiectatic disease, associated with voluntary cough suppression."],
+    ["Mycobacterium abscessus lung disease is notable for:",
+     ["Easy cure with first-line anti-TB drugs", "Extensive drug resistance requiring prolonged multidrug therapy", "Spontaneous resolution", "Response to a single macrolide"],
+     1, "M. abscessus is highly drug-resistant, requiring prolonged multidrug therapy (often 12-24 months) and surgical consideration."]
+  ]]
+]],
+[49, "Shortness of Breath", [
+  [1, "HPI/PMH/ROS for SOB", [
+    ["Orthopnea and paroxysmal nocturnal dyspnea most strongly suggest which cause of SOB?",
+     ["Asthma", "Left-sided heart failure", "Pulmonary embolism", "Pneumothorax"],
+     1, "Orthopnea and PND are classic symptoms of left-sided HF (pulmonary congestion worse lying flat)."],
+    ["Sudden pleuritic chest pain with acute dyspnea in a postoperative patient raises suspicion for:",
+     ["Pulmonary embolism", "Simple URI", "Allergic rhinitis", "Chronic bronchitis"],
+     0, "Sudden pleuritic pain + acute dyspnea post-surgery = classic PE presentation; needs rapid evaluation."]
+  ]],
+  [2, "Physical exam for SOB differentials", [
+    ["Unilateral absent breath sounds, hyperresonance to percussion, and tracheal deviation away from the affected side indicate:",
+     ["Large pleural effusion", "Tension pneumothorax", "Atelectasis", "Pulmonary embolism"],
+     1, "Tension pneumothorax: absent breath sounds, hyperresonance, and contralateral tracheal deviation with hemodynamic compromise. Immediate needle/thoracotomy."],
+    ["Elevated JVD, bibasilar crackles, S3 gallop, and peripheral edema in a dyspneic patient suggest:",
+     ["Pneumothorax", "Congestive heart failure with volume overload", "Asthma exacerbation", "Anxiety attack"],
+     1, "Classic left-sided heart failure with right-sided congestion: JVD, crackles, S3, edema—signs of CHF."]
+  ]],
+  [3, "DDx list for SOB", [
+    ["Which diagnosis should be considered first in a patient with SUDDEN dyspnea and pleuritic chest pain, regardless of other symptoms?",
+     ["Mild bronchitis", "Pulmonary embolism and pneumothorax", "Allergic rhinitis", "Mild anemia"],
+     1, "Sudden dyspnea with pleuritic pain warrants immediate consideration of PE and pneumothorax; these are time-sensitive diagnoses."],
+    ["Kussmaul respirations (deep, rapid breathing) in a dyspneic diabetic patient suggest:",
+     ["CHF", "Diabetic ketoacidosis", "Simple anxiety", "Common cold"],
+     1, "Kussmaul respirations arise from metabolic acidosis compensation; in a diabetic, DKA is the classic trigger."]
+  ]],
+  [4, "Tests to distinguish SOB differentials", [
+    ["BNP (or NT-proBNP) is most useful for:",
+     ["Diagnosing PE", "Distinguishing cardiac from noncardiac causes of dyspnea", "Screening for asthma", "Assessing bone density"],
+     1, "Elevated BNP suggests ventricular strain from volume/pressure overload (HF); a low BNP helps rule out HF as cause of dyspnea."],
+    ["A patient with new dyspnea, asymmetric leg swelling, and recent surgery should have which test prioritized?",
+     ["Echocardiogram", "CT pulmonary angiogram", "Chest MRI", "Abdominal ultrasound"],
+     1, "Post-op dyspnea + asymmetric leg swelling = high suspicion for PE; CTPA is first-line imaging for PE."]
+  ]],
+  [5, "Diagnostic pathway in SOB", [
+    ["A 68-year-old smoker presents with progressive dyspnea on exertion, chronic productive cough, barrel chest, hyperresonance, and decreased breath sounds. Most likely:",
+     ["CHF", "COPD", "Pulmonary embolism", "Asthma"],
+     1, "Chronic smoker with progressive exertional dyspnea and COPD physical findings → COPD; confirm with post-BD spirometry."],
+    ["A 30-year-old with episodic dyspnea and wheezing triggered by exercise and allergens, with complete resolution between episodes, is most likely:",
+     ["COPD", "Asthma", "PE", "Pulmonary hypertension"],
+     1, "Episodic dyspnea with reversible airflow obstruction, allergic triggers, and normal baseline → asthma. Confirm with spirometry and reversibility."]
+  ]],
+  [6, "Characteristics of final SOB diagnoses", [
+    ["First-line treatment for acute decompensated heart failure with pulmonary edema is:",
+     ["IV loop diuretic, O2, nitrate for congestion and hypertension, with afterload reduction", "Oral prednisone only", "Bronchodilators only", "Antibiotics only"],
+     0, "Acute decompensated HF with pulmonary edema: IV loop diuretic (furosemide), supplemental O2, nitrates (if BP permits), noninvasive ventilation for severe cases."],
+    ["Initial treatment of acute asthma exacerbation includes:",
+     ["Inhaled SABA and systemic corticosteroids", "IV vancomycin", "Intubation for all", "Watchful waiting"],
+     0, "Acute asthma: repeated SABA, systemic corticosteroids, supplemental O2 for hypoxia, consider IM epinephrine if anaphylaxis; IV Mg for severe."]
+  ]]
+]],
+[50, "CVS Complications Related to Respiratory System Illnesses", [
+  [1, "CV and respiratory system anatomy/physiology interrelationships", [
+    ["The pulmonary circulation is characterized by:",
+     ["High pressure, high resistance", "Low pressure, low resistance (mean PA pressure ~15 mmHg)", "Only arterial blood", "Only venous blood"],
+     1, "Pulmonary circulation operates at low pressure (~25/8, mean ~15) and low resistance, allowing gas exchange at the alveolar-capillary interface."],
+    ["Hypoxic pulmonary vasoconstriction functions to:",
+     ["Increase ventilation to under-perfused areas", "Redirect blood flow away from poorly ventilated alveoli to better ventilated alveoli", "Cause systemic vasodilation", "Reduce cardiac output"],
+     1, "HPV is a unique pulmonary response to alveolar hypoxia—constriction reduces perfusion to under-ventilated regions, optimizing V/Q matching."]
+  ]],
+  [2, "Common CV complications: pulmonary HTN, cor pulmonale, HF", [
+    ["Cor pulmonale refers to:",
+     ["Left ventricular failure due to coronary disease", "Right ventricular dysfunction secondary to chronic lung disease and pulmonary hypertension", "Pulmonary infarction only", "Aortic regurgitation"],
+     1, "Cor pulmonale = RV hypertrophy/dilation/failure resulting from chronic pulmonary hypertension due to intrinsic lung disease (WHO group 3)."],
+    ["According to WHO classification, pulmonary arterial hypertension (PAH, group 1) includes:",
+     ["Idiopathic PAH, heritable PAH, drug-induced PAH, and PAH associated with connective tissue disease or HIV", "Left heart disease", "Chronic lung disease", "CTEPH"],
+     0, "WHO Group 1 PAH: idiopathic, heritable (BMPR2), drug/toxin-induced (methamphetamines, anorexigens), CTD-associated, HIV, congenital heart disease, portal HTN."]
+  ]],
+  [3, "Pathophysiology, diagnosis, management", [
+    ["The GOLD STANDARD for diagnosing and classifying pulmonary hypertension is:",
+     ["Transthoracic echocardiogram", "Right heart catheterization", "CT chest", "Pulmonary function tests"],
+     1, "Right heart catheterization (measuring mPA, PAWP, cardiac output) is definitive for diagnosis and classification of pulmonary hypertension."],
+    ["First-line chronic therapy specifically for WHO Group 1 PAH (idiopathic) may include:",
+     ["Endothelin receptor antagonists, PDE5 inhibitors, prostacyclin analogues", "Loop diuretics only", "Antibiotics", "Beta-blockers alone"],
+     0, "PAH-specific therapies: endothelin receptor antagonists (bosentan, ambrisentan), PDE5 inhibitors (sildenafil), prostacyclin analogues (epoprostenol, treprostinil), guanylate cyclase stimulators (riociguat)."]
+  ]],
+  [4, "EBM in evaluating interventions", [
+    ["Which of the following is the highest-quality evidence for evaluating a new therapy?",
+     ["Case series", "Expert opinion", "Systematic review of randomized controlled trials", "Single case report"],
+     2, "A systematic review/meta-analysis of well-conducted RCTs represents the highest level of evidence in the EBM hierarchy."],
+    ["Number needed to treat (NNT) describes:",
+     ["Risk of adverse events", "Number of patients to treat for one additional desired outcome vs. control", "Cost of therapy", "Time to death"],
+     1, "NNT = 1/absolute risk reduction; it indicates how many patients need treatment to prevent one additional bad outcome compared to control."]
+  ]],
+  [5, "Communication and collaboration", [
+    ["Which is the primary purpose of the SBAR tool in healthcare?",
+     ["Calculate dosing", "Standardize handoff communication (Situation, Background, Assessment, Recommendation)", "Ambulance routing", "Medication reconciliation"],
+     1, "SBAR is a structured communication tool to enhance handoffs and inter-professional communication."],
+    ["A multidisciplinary approach to pulmonary hypertension care typically includes:",
+     ["Pulmonology, cardiology, nursing, RT, pharmacy, social work", "Pulmonology alone", "Cardiology alone", "Dermatology"],
+     0, "Optimal PH/cor pulmonale care is multidisciplinary: pulmonology, cardiology, RT, nursing, pharmacy, social work, PT, and palliative care."]
+  ]]
+]],
+[51, "Hemoptysis", [
+  [1, "Define hemoptysis and types", [
+    ["Massive hemoptysis is often defined as:",
+     ["Any amount of blood in sputum", ">200-600 mL over 24 hours (or that causes hemodynamic/respiratory compromise)", "Any streaky blood", "<10 mL in 24 hours"],
+     1, "Massive hemoptysis thresholds vary (200-600 mL/24 h) but definition should include any amount compromising oxygenation or hemodynamics."],
+    ["The main cause of death in massive hemoptysis is:",
+     ["Hemorrhagic shock", "Asphyxiation from airway blood", "Sepsis", "Arrhythmia"],
+     1, "Patients die more often from asphyxiation (airway blood) than from exsanguination; airway protection is the priority."]
+  ]],
+  [2, "Respiratory diseases leading to hemoptysis", [
+    ["Hemoptysis in a patient with a cavitary upper-lobe lesion, fevers, and weight loss should raise strong concern for:",
+     ["Tuberculosis or lung cancer (e.g., squamous)", "Simple viral URI", "Allergic rhinitis", "Asthma exacerbation"],
+     0, "Cavitary upper-lobe disease + systemic symptoms: consider TB, squamous cell carcinoma, and other cavitary infections (fungal, abscess)."],
+    ["Aspergilloma typically arises in:",
+     ["Healthy lungs", "A pre-existing lung cavity (e.g., from old TB or bullous disease)", "Newborn lungs", "Normal pleura"],
+     1, "Aspergilloma (fungus ball) forms in pre-existing cavities (often from prior TB), can cause life-threatening hemoptysis due to vascular erosion."]
+  ]],
+  [3, "Clinical features, diagnosis, management of hemoptysis", [
+    ["Which imaging test is most useful in localizing the source of active hemoptysis and identifying underlying pathology?",
+     ["CXR alone", "CT chest (often with contrast) +/- bronchoscopy", "Chest MRI only", "Abdominal ultrasound"],
+     1, "CT chest (especially CT angiography for active bleeding) plus bronchoscopy are workhorses for localizing bleeding and identifying etiology."],
+    ["The DEFINITIVE treatment for many cases of massive hemoptysis is:",
+     ["Oral antibiotics", "Bronchial artery embolization (BAE) by interventional radiology", "Bed rest only", "Oxygen alone"],
+     1, "BAE is the definitive intervention for massive hemoptysis from bronchial artery sources; success rates >90%. Airway protection is the immediate priority."]
+  ]],
+  [4, "Apply EBM and clinical reasoning to hemoptysis cases", [
+    ["Which initial measure is most important in a patient with massive hemoptysis?",
+     ["Immediate airway protection (consider intubation, positioning bleeding lung DOWN) and hemodynamic stabilization", "Empiric antibiotics only", "Oral bronchodilators", "Immediate thrombolysis"],
+     0, "First priority is airway and hemodynamic stability: intubation (often double-lumen), positioning (bleeding side DOWN), IV access, and rapid reversal of coagulopathy."],
+    ["A hemoptysis patient with recent hemoptysis, hematuria, and pulmonary infiltrates should be evaluated for:",
+     ["Simple bronchitis", "Pulmonary-renal syndromes such as Goodpasture or ANCA-associated vasculitis", "Iron deficiency anemia alone", "Anxiety"],
+     1, "Hemoptysis + hematuria = pulmonary-renal syndrome: test anti-GBM antibody (Goodpasture) and ANCA (GPA/MPA). Prompt immunosuppression may be life-saving."]
+  ]]
+]],
+[52, "Neck Masses & Diseases of the Larynx", [
+  [1, "Compartments of the neck", [
+    ["The anterior triangle of the neck is bounded by the SCM, the midline, and:",
+     ["The clavicle", "The mandible superiorly", "The scapula", "The hyoid only"],
+     1, "Anterior triangle boundaries: SCM posteriorly, midline anteriorly, mandible superiorly. Contains carotid sheath, thyroid, submandibular gland, larynx."],
+    ["Cervical lymph node level II refers to:",
+     ["Nodes in the submental region", "Upper jugular nodes (along IJV, skull base to hyoid)", "Supraclavicular nodes", "Retropharyngeal nodes"],
+     1, "Robbins level II = upper jugular nodes (along internal jugular vein, from skull base to hyoid) — often involved in oropharyngeal malignancies."]
+  ]],
+  [2, "Congenital masses of the neck", [
+    ["A midline neck mass that elevates with tongue protrusion is characteristic of:",
+     ["Branchial cleft cyst", "Thyroglossal duct cyst", "Dermoid cyst", "Lipoma"],
+     1, "Thyroglossal duct cysts are midline, move upward with swallowing or tongue protrusion (due to connection to foramen cecum)."],
+    ["A lateral cervical cyst anterior to the SCM in a young adult is most likely:",
+     ["Thyroglossal duct cyst", "Branchial cleft cyst (most commonly second arch)", "Laryngocele", "Thyroid adenoma"],
+     1, "Branchial cleft cysts are lateral (usually anterior to SCM), most commonly from the 2nd branchial arch, presenting in childhood/young adulthood."]
+  ]],
+  [3, "Inflammatory masses of the neck", [
+    ["Ludwig's angina is:",
+     ["Angina pectoris", "Cellulitis of the submandibular space (bilateral) that can threaten the airway", "Malignant tumor of the tonsils", "Vasculitis"],
+     1, "Ludwig's angina: rapidly progressive submandibular cellulitis often from dental infection; can cause airway compromise requiring emergent management."],
+    ["Cat-scratch disease causing cervical lymphadenopathy is most often caused by:",
+     ["Toxoplasma gondii", "Bartonella henselae", "Mycobacterium tuberculosis", "EBV"],
+     1, "Cat-scratch disease is caused by Bartonella henselae, producing subacute regional lymphadenopathy, often with primary skin papule at scratch site."]
+  ]],
+  [4, "Neoplastic masses of the neck", [
+    ["The most common malignant neck mass in adults is:",
+     ["Lipoma", "Squamous cell carcinoma (often metastatic from upper aerodigestive tract)", "Thyroid cyst", "Hemangioma"],
+     1, "Metastatic SCC from upper aerodigestive tract sources is the most common malignant neck mass in adults (particularly in smokers/HPV-positive patients)."],
+    ["Any persistent neck mass in an adult older than 40 should be considered:",
+     ["Normal variant", "Malignant until proven otherwise", "Simple cyst", "Viral lymphadenitis"],
+     1, "Persistent adult neck mass (esp. >40 yr) has a high likelihood of malignancy and must be evaluated accordingly (imaging, FNA)."]
+  ]],
+  [5, "Traumatic masses of the neck", [
+    ["A pulsatile neck mass after blunt or penetrating trauma is concerning for:",
+     ["Lipoma", "Vascular injury (pseudoaneurysm or hematoma)", "Thyroid cyst", "Benign fibroma"],
+     1, "Pulsatile mass after trauma = concern for vascular injury—pseudoaneurysm or enlarging hematoma; urgent imaging and possible intervention required."],
+    ["The most urgent concern in significant laryngeal trauma is:",
+     ["Cosmesis", "Airway compromise", "Infection only", "Chronic cough"],
+     1, "Airway compromise is the #1 concern in laryngeal trauma; early surgical consultation and preparedness for emergency airway are essential."]
+  ]],
+  [6, "Evaluation of a patient with a neck mass", [
+    ["The preferred initial biopsy technique for most adult neck masses is:",
+     ["Open excisional biopsy", "Fine-needle aspiration (often with ultrasound guidance)", "Laser ablation", "Surgical drainage"],
+     1, "FNA is safe, minimally invasive, and provides reliable cytology; open biopsy should be avoided as initial workup of a potentially malignant node (may affect staging/radiation field)."],
+    ["Which imaging is generally most useful for initial characterization of a non-thyroid adult neck mass?",
+     ["Abdominal ultrasound", "Contrast-enhanced CT neck", "PET only", "Skull X-ray"],
+     1, "Contrast-enhanced CT neck is the standard first-line imaging for most adult neck masses. Ultrasound is excellent for thyroid; MRI adds soft-tissue detail; PET-CT for cancer staging."]
+  ]]
+]]
+];
+
+// ============================================================
+// APP LOGIC
+// ============================================================
+const STORAGE_KEY = "resp_quiz_v1";
+let state = loadState();
+let currentTopicIdx = 0;
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return { answers: {} }; // key: "T_LO_Q" -> { selected: int, correct: bool }
+}
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+function questionKey(ti, li, qi) {
+  return `${ti}_${li}_${qi}`;
+}
+
+function countTotalQuestions() {
+  let total = 0;
+  QUIZ.forEach(t => t[2].forEach(lo => total += lo[2].length));
+  return total;
+}
+const TOTAL_Q = countTotalQuestions();
+
+function countTopicQuestions(topicIdx) {
+  return QUIZ[topicIdx][2].reduce((sum, lo) => sum + lo[2].length, 0);
+}
+
+function countTopicAnswered(topicIdx) {
+  const t = QUIZ[topicIdx];
+  const tNum = t[0];
+  let answered = 0, correct = 0;
+  t[2].forEach((lo, liIdx) => {
+    lo[2].forEach((q, qi) => {
+      const key = questionKey(tNum, lo[0], qi);
+      if (state.answers[key]) {
+        answered++;
+        if (state.answers[key].correct) correct++;
+      }
+    });
+  });
+  return { answered, correct };
+}
+
+function updateStats() {
+  let answered = 0, correct = 0;
+  Object.values(state.answers).forEach(a => {
+    answered++;
+    if (a.correct) correct++;
+  });
+  document.getElementById("stat-answered").textContent = `${answered} / ${TOTAL_Q}`;
+  const pct = answered === 0 ? 0 : Math.round(correct/answered*100);
+  document.getElementById("stat-correct").textContent = `${correct} (${pct}%)`;
+  document.getElementById("overall-progress").style.width = (answered/TOTAL_Q*100).toFixed(1)+"%";
+}
+
+function renderSidebar() {
+  const list = document.getElementById("topic-list");
+  list.innerHTML = "";
+  QUIZ.forEach((t, i) => {
+    const [num, title] = t;
+    const total = countTopicQuestions(i);
+    const { answered } = countTopicAnswered(i);
+    const link = document.createElement("a");
+    link.className = "topic-link" + (i === currentTopicIdx ? " active" : "") + (answered === total ? " complete" : "");
+    link.innerHTML = `<span class="num">${num}.</span>${title}<span class="count">${answered}/${total}</span>`;
+    link.onclick = (e) => { e.preventDefault(); currentTopicIdx = i; render(); window.scrollTo(0,0); };
+    list.appendChild(link);
+  });
+}
+
+function renderMain() {
+  const main = document.getElementById("main");
+  const t = QUIZ[currentTopicIdx];
+  const [tNum, tTitle, los] = t;
+  const { answered, correct } = countTopicAnswered(currentTopicIdx);
+  const total = countTopicQuestions(currentTopicIdx);
+  const pct = answered === 0 ? 0 : Math.round(correct/answered*100);
+
+  let html = `<h2 class="topic-header">Topic ${tNum}. ${tTitle}</h2>
+    <div class="topic-subheader">${los.length} learning objective${los.length>1?"s":""} · ${total} questions</div>
+    <div class="topic-score">
+      <span><strong>${answered}</strong> / ${total} answered</span>
+      <div class="topic-score-bar"><div class="topic-score-fill" style="width:${(answered/total*100).toFixed(1)}%"></div></div>
+      <span>${correct} correct (${pct}%)</span>
+    </div>`;
+
+  los.forEach((lo, liIdx) => {
+    const [loNum, loText, qs] = lo;
+    html += `<div class="lo-header" style="margin:18px 0 6px;font-size:14px;font-weight:600;color:#334155;">LO ${loNum}. ${escapeHtml(loText)}</div>`;
+    qs.forEach((q, qi) => {
+      const [stem, opts, correctIdx, explanation] = q;
+      const key = questionKey(tNum, loNum, qi);
+      const ans = state.answers[key];
+      html += `<div class="question-card" data-key="${key}" data-correct="${correctIdx}" data-explanation="${escapeAttr(explanation)}">
+        <div class="question-meta">Question ${qi+1}</div>
+        <div class="question-stem">${escapeHtml(stem)}</div>
+        <div class="options">`;
+      opts.forEach((opt, i) => {
+        let cls = "option";
+        if (ans) {
+          cls += " locked";
+          if (i === correctIdx) cls += " correct";
+          else if (i === ans.selected) cls += " wrong";
+          else cls += " dim";
+        }
+        html += `<button class="${cls}" data-opt="${i}">
+          <span class="letter">${String.fromCharCode(65+i)}.</span>
+          <span>${escapeHtml(opt)}</span>
+        </button>`;
+      });
+      html += `</div>`;
+      if (ans) {
+        const isCorrect = ans.selected === correctIdx;
+        html += `<div class="feedback ${isCorrect?"correct":"wrong"} show">
+          <span class="feedback-label">${isCorrect?"✓ Correct.":"✗ Incorrect."}</span>
+          ${escapeHtml(explanation)}
+        </div>`;
+      } else {
+        html += `<div class="feedback"></div>`;
+      }
+      html += `</div>`;
+    });
+  });
+
+  html += `<div class="topic-nav">
+    <button class="nav-btn" id="prev-btn" ${currentTopicIdx===0?"disabled":""}>← Previous Topic</button>
+    <button class="nav-btn" id="next-btn" ${currentTopicIdx===QUIZ.length-1?"disabled":""}>Next Topic →</button>
+  </div>`;
+
+  main.innerHTML = html;
+
+  // Bind option clicks
+  main.querySelectorAll(".question-card").forEach(card => {
+    const key = card.dataset.key;
+    if (state.answers[key]) return; // already answered
+    card.querySelectorAll(".option").forEach(btn => {
+      btn.addEventListener("click", () => answerQuestion(card, btn));
+    });
+  });
+
+  // Nav buttons
+  const pb = document.getElementById("prev-btn");
+  const nb = document.getElementById("next-btn");
+  if (pb) pb.onclick = () => { if (currentTopicIdx>0) { currentTopicIdx--; render(); window.scrollTo(0,0); } };
+  if (nb) nb.onclick = () => { if (currentTopicIdx<QUIZ.length-1) { currentTopicIdx++; render(); window.scrollTo(0,0); } };
+}
+
+function answerQuestion(card, btn) {
+  const key = card.dataset.key;
+  const correctIdx = parseInt(card.dataset.correct);
+  const selected = parseInt(btn.dataset.opt);
+  const isCorrect = selected === correctIdx;
+  state.answers[key] = { selected, correct: isCorrect };
+  saveState();
+
+  // Update UI: lock buttons, highlight correct/wrong, show feedback
+  const options = card.querySelectorAll(".option");
+  options.forEach((opt, i) => {
+    opt.classList.add("locked");
+    if (i === correctIdx) opt.classList.add("correct");
+    else if (i === selected) opt.classList.add("wrong");
+    else opt.classList.add("dim");
+    // Remove click handlers
+    const newOpt = opt.cloneNode(true);
+    opt.parentNode.replaceChild(newOpt, opt);
+  });
+  const fb = card.querySelector(".feedback");
+  fb.className = "feedback " + (isCorrect ? "correct" : "wrong") + " show";
+  fb.innerHTML = `<span class="feedback-label">${isCorrect?"✓ Correct.":"✗ Incorrect."}</span>` + escapeHtml(card.dataset.explanation);
+
+  updateStats();
+  renderSidebar();
+}
+
+function render() {
+  renderSidebar();
+  renderMain();
+  updateStats();
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s) { return escapeHtml(s); }
+
+document.getElementById("reset-btn").onclick = () => {
+  if (confirm("Reset all answers?")) {
+    state = { answers: {} };
+    saveState();
+    render();
+  }
+};
+
+render();
+</script>
+</body>
+</html>
