@@ -23,6 +23,7 @@ Cardiology:
 
 GI:
 [Exam 1](https://sstander84.github.io/GI_E1.html)
+[Exam 2](https://sstander84.github.io/GI_E2.html)
 
 
 
