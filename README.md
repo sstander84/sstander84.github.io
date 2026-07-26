@@ -26,5 +26,5 @@ GI:
 [Exam 2](https://sstander84.github.io/GI_E2.html)
 
 Renal:
-[Both Exams](https://sstamder84.github.io/renal.html)
+[Both Exams](https://sstander84.github.io/renal.html)
 
