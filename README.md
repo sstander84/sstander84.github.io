@@ -31,3 +31,5 @@ Renal:
 Endocrine:
 [Both Exams](https://sstander84.github.io/endocrine.html) 
 
+Rehum/MSK:
+[Both Exams](https://sstander84.github.io/rheum_msk.html)
