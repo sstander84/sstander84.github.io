@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Sacrum &amp; Pelvis — diagnosis cases</title>
+<style>
+:root{
+  --bg:#f6f7f9; --card:#ffffff; --ink:#14171c; --ink2:#3d434e; --mut:#666e7c;
+  --faint:#8b93a1; --line:#dfe3ea; --line2:#c8cfda;
+  --ok:#0f6b46; --okbg:#e6f4ec; --bad:#a3172f; --badbg:#fbe9ec;
+  --sac:#0e5f8a; --sacbg:#e6f1f8; --pel:#8a4a05; --pelbg:#fbefdd;
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:inherit;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--ink);
+  font:15px/1.5 ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  padding:18px 16px 60px}
+.wrap{max-width:1080px;margin:0 auto}
+
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px 16px;margin-bottom:14px}
+h1{font-size:19px;letter-spacing:-.02em}
+.sub{color:var(--mut);font-size:13px}
+.spacer{flex:1}
+.score{font:600 13px/1 ui-monospace,monospace;color:var(--ink2);
+  border:1px solid var(--line2);border-radius:8px;padding:7px 10px;background:var(--card)}
+
+.bar{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+button{cursor:pointer;border:1px solid var(--line2);background:var(--card);color:var(--ink);
+  border-radius:9px;font-size:13.5px;padding:8px 13px;min-height:38px;transition:.12s}
+button:hover:not(:disabled){border-color:var(--ink2)}
+button.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:650}
+button:disabled{cursor:default}
+.ghost{background:transparent}
+
+.case{background:var(--card);border:1px solid var(--line);border-radius:14px;
+  padding:16px 18px;margin-bottom:14px}
+.tag{display:inline-block;font:700 10.5px/1 ui-sans-serif;letter-spacing:.11em;
+  text-transform:uppercase;padding:5px 8px;border-radius:6px;margin-bottom:10px}
+.tag.s{background:var(--sacbg);color:var(--sac)}
+.tag.p{background:var(--pelbg);color:var(--pel)}
+.stem{font-size:14.5px;color:var(--ink2);margin-bottom:10px}
+ul.find{list-style:none;display:grid;gap:6px}
+ul.find li{display:flex;gap:9px;align-items:flex-start;font-size:15px}
+ul.find li b{color:var(--ink);font-weight:650}
+ul.find li:before{content:"";flex:none;width:6px;height:6px;border-radius:50%;
+  background:var(--line2);margin-top:8px}
+
+h2.gh{font:700 10.5px/1 ui-sans-serif;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--faint);margin:14px 0 8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:7px}
+.opt{text-align:left;padding:10px 12px;line-height:1.3;min-height:42px}
+.opt.ok{border-color:var(--ok);background:var(--okbg);color:var(--ok);font-weight:650}
+.opt.no{border-color:var(--bad);background:var(--badbg);color:var(--bad);font-weight:650}
+.opt.dim{opacity:.45}
+
+.ans{margin-top:14px;padding:13px 15px;border-radius:12px;border-left:3px solid var(--line2);
+  background:#fafbfc;font-size:14px;line-height:1.55;color:var(--ink2)}
+.ans.ok{border-left-color:var(--ok)} .ans.no{border-left-color:var(--bad)}
+.ans .v{font-weight:700;color:var(--ink);display:block;margin-bottom:5px}
+.ans ol{margin:7px 0 0 18px;display:grid;gap:3px}
+.acts{display:flex;gap:9px;align-items:center;margin-top:13px;flex-wrap:wrap}
+.acts .hint{color:var(--faint);font-size:12.5px}
+kbd{font:600 11px/1 ui-monospace,monospace;border:1px solid var(--line2);border-bottom-width:2px;
+  border-radius:5px;padding:3px 5px;background:#fff}
+.note{color:var(--faint);font-size:12px;margin-top:18px;line-height:1.6}
+@media(max-width:560px){ .grid{grid-template-columns:1fr} h1{font-size:17px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Sacrum &amp; pelvis — diagnosis cases</h1>
+      <div class="sub">Findings in, diagnosis out. Cases are generated from the mechanics, so they never contradict themselves.</div>
+    </div>
+    <div class="spacer"></div>
+    <div class="score" id="score">0 / 0</div>
+  </header>
+
+  <div class="bar">
+    <button id="m-both" class="on" onclick="setMode('both')">Both</button>
+    <button id="m-sacrum" onclick="setMode('sacrum')">Sacrum only</button>
+    <button id="m-pelvis" onclick="setMode('pelvis')">Pelvis only</button>
+    <span style="flex:1"></span>
+    <button class="ghost" onclick="resetScore()">Reset score</button>
+  </div>
+
+  <div id="app"></div>
+
+  <p class="note">
+    Sacral findings follow the Sacrum II criteria (Sandhouse); pelvic findings follow Pelvis II (Reindel), where
+    anterior rotation is ASIS inferior and PSIS superior on the affected side, and so on. Landmark findings are
+    <b>relative</b>, so a case may describe them from either side — the test of laterality is what names the side.
+    Pubic shears are included because they appear in the OPP III question bank.
+  </p>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════════
+   THE MODEL
+   Every case is generated from the mechanics rather than written out, so a
+   case can never contain a contradiction. The same model is then used as a
+   SOLVER: after generating findings, every candidate diagnosis is tested
+   against them, and the case is only shown if exactly one candidate survives.
+   ══════════════════════════════════════════════════════════════════════════ */
+const other = s => s === "L" ? "R" : "L";
+const SIDE = {L:"left", R:"right"};
+const Cap = s => s[0].toUpperCase() + s.slice(1);
+
+/* ── sacrum ──────────────────────────────────────────────────────────────
+   An oblique axis runs from the sacral base on its own side to the OPPOSITE
+   ILA. Those two corners are anchored; the other two see-saw. Rotation names
+   the direction the sacrum turns, and a body rotating left carries its right
+   side forward — so the base corner opposite the axis moves anteriorly in a
+   forward torsion and posteriorly in a backward one. */
+function sacralProfile(d){
+  if (d.kind === "torsion"){
+    const ax = d.axis, rot = d.rot, free = other(ax), fwd = ax === rot;
+    return {
+      region:"sacrum",
+      label:`${rot} on ${ax} sacral torsion`,
+      sulcus:{side:free, deep:fwd},          // abnormal sulcus is opposite the axis
+      ila:{side:ax, post:fwd},               // abnormal ILA is on the axis side
+      ilaLow: fwd ? ax : free,               // post ILA sits lower; ant ILA sits higher
+      gap:"under",                           // torsion = under a thumb
+      seated: free,                          // positive opposite the axis
+      spring: !fwd,                          // positive when part of the base is posterior
+      sphinx: fwd ? "sym" : "asym"
+    };
+  }
+  if (d.kind === "uni"){
+    const s = d.side, fx = d.flexed;
+    return {
+      region:"sacrum",
+      label:`${SIDE[s]} unilateral sacral ${fx ? "flexion" : "extension"}`,
+      sulcus:{side:s, deep:fx},
+      ila:{side:s, post:fx},
+      ilaLow: fx ? s : other(s),
+      gap:"over",
+      seated: s,                             // named for the positive side
+      spring: !fx,
+      sphinx: fx ? "sym" : "asym"
+    };
+  }
+  const fx = d.flexed;
+  return {
+    region:"sacrum",
+    label:`bilateral sacral ${fx ? "flexion" : "extension"}`,
+    sulcus:{side:"both", deep:fx},
+    ila:{side:"both", post:fx},
+    ilaLow:"level",
+    gap:"level",
+    seated:"neg",
+    spring:!fx,
+    sphinx: fx ? "sym" : "asym"
+  };
+}
+
+const SACRAL_DX = [];
+for (const rot of ["L","R"]) for (const ax of ["L","R"])
+  SACRAL_DX.push({kind:"torsion", rot, axis:ax});
+for (const s of ["L","R"]) for (const f of [true,false])
+  SACRAL_DX.push({kind:"uni", side:s, flexed:f});
+SACRAL_DX.push({kind:"bi", flexed:true}, {kind:"bi", flexed:false});
+
+/* ── pelvis ──────────────────────────────────────────────────────────────
+   Pelvis II gives each dysfunction as a pair of landmark statements on the
+   affected side. Landmarks are relative, so each is stored as "which side is
+   superior / medial / etc", which is what makes a case describable from
+   either side. */
+const PELVIC_TYPES = [
+  {id:"antrot",  name:"anterior innominate rotation",  asis:"inf",  psis:"sup"},
+  {id:"postrot", name:"posterior innominate rotation", asis:"sup",  psis:"inf"},
+  {id:"supshear",name:"superior innominate shear",     asis:"sup",  psis:"sup"},
+  {id:"infshear",name:"inferior innominate shear",     asis:"inf",  psis:"inf"},
+  {id:"inflare", name:"inflared innominate",           asis:"med",  psis:"far"},
+  {id:"outflare",name:"outflared innominate",          asis:"lat",  psis:"near"},
+  {id:"suppub",  name:"superior pubic shear",          pubic:"sup"},
+  {id:"infpub",  name:"inferior pubic shear",          pubic:"inf"},
+];
+const OPP = {sup:"inf", inf:"sup", med:"lat", lat:"med", far:"near", near:"far"};
+
+function pelvicProfile(d){
+  const t = PELVIC_TYPES.find(x => x.id === d.type), s = d.side;
+  const p = {region:"pelvis", label:`${SIDE[s]} ${t.name}`, side:s, lat:s};
+  if (t.asis){ p.asis = {[s]: t.asis, [other(s)]: OPP[t.asis]}; }
+  if (t.psis){ p.psis = {[s]: t.psis, [other(s)]: OPP[t.psis]}; }
+  if (t.pubic){ p.pubic = {[s]: t.pubic, [other(s)]: OPP[t.pubic]}; }
+  return p;
+}
+const PELVIC_DX = [];
+for (const t of PELVIC_TYPES) for (const s of ["L","R"])
+  PELVIC_DX.push({type:t.id, side:s});
+
+const ALL_SACRAL  = SACRAL_DX.map(sacralProfile);
+const ALL_PELVIC  = PELVIC_DX.map(pelvicProfile);
+
+/* ══════════════════════════════════════════════════════════════════════════
+   FINDINGS — each is an object that can be RENDERED as a sentence and TESTED
+   against any candidate profile. Keeping those two things together is what
+   makes the uniqueness check trustworthy.
+   ══════════════════════════════════════════════════════════════════════════ */
+const F = {
+  /* sacrum */
+  sulcus: v => ({
+    text: v.side === "both"
+      ? `Both sacral sulci are <b>${v.deep ? "deep" : "shallow"}</b>.`
+      : `The sacral sulcus is <b>${v.deep ? "deep" : "shallow"}</b> on the <b>${SIDE[v.side]}</b>.`,
+    test: p => p.region === "sacrum" &&
+      (v.side === "both"
+        ? p.sulcus.side === "both" && p.sulcus.deep === v.deep
+        : p.sulcus.side !== "both" &&
+          ((p.sulcus.side === v.side && p.sulcus.deep === v.deep) ||
+           (p.sulcus.side === other(v.side) && p.sulcus.deep !== v.deep)))
+  }),
+  ila: v => ({
+    text: v.side === "both"
+      ? `Both inferior lateral angles are <b>${v.post ? "posterior" : "anterior"}</b>.`
+      : `The <b>${SIDE[v.side]}</b> inferior lateral angle is <b>${v.post ? "posterior" : "anterior"}</b>.`,
+    test: p => p.region === "sacrum" &&
+      (v.side === "both"
+        ? p.ila.side === "both" && p.ila.post === v.post
+        : p.ila.side !== "both" &&
+          ((p.ila.side === v.side && p.ila.post === v.post) ||
+           (p.ila.side === other(v.side) && p.ila.post !== v.post)))
+  }),
+  gap: v => ({
+    text: v === "level" ? "The inferior lateral angles are <b>level</b> with each other."
+        : v === "under" ? "The inferior lateral angles are <b>less than a thumb's width</b> apart in the caudad/cephalad plane."
+        : "The inferior lateral angles are <b>more than a thumb's width</b> apart in the caudad/cephalad plane.",
+    test: p => p.region === "sacrum" && p.gap === v
+  }),
+  ilaLow: v => ({
+    text: `The <b>${SIDE[v]}</b> inferior lateral angle sits more <b>inferior</b>.`,
+    test: p => p.region === "sacrum" && p.ilaLow === v
+  }),
+  seated: v => ({
+    text: v === "neg" ? "The <b>seated flexion test is negative</b>."
+                      : `The <b>seated flexion test is positive on the ${SIDE[v]}</b>.`,
+    test: p => p.region === "sacrum" && p.seated === v
+  }),
+  spring: v => ({
+    text: v ? "The <b>lumbosacral spring test is positive</b> — a hard end feel."
+            : "The <b>lumbosacral spring test is negative</b> — soft and springy.",
+    test: p => p.region === "sacrum" && p.spring === v
+  }),
+  sphinx: v => ({
+    text: v === "sym" ? "On <b>backward bending (sphinx)</b> the sulci become <b>more symmetrical</b>."
+                      : "On <b>backward bending (sphinx)</b> the sulci become <b>more asymmetrical</b>.",
+    test: p => p.region === "sacrum" && p.sphinx === v
+  }),
+
+  /* pelvis */
+  land: (mark, side, dir) => ({
+    text: `The <b>${mark.toUpperCase()}</b> is <b>${DIRW[dir]}</b> on the <b>${SIDE[side]}</b>.`,
+    test: p => p.region === "pelvis" && p[mark] && p[mark][side] === dir
+  }),
+  /* the negative findings a real vignette gives you, and which are diagnostic
+     in their own right: a pubic shear leaves the innominate landmarks level,
+     and an innominate dysfunction leaves the tubercles level */
+  levelInnom: () => ({
+    text: "The <b>ASIS and PSIS are level</b> on both sides.",
+    test: p => p.region === "pelvis" && !p.asis
+  }),
+  levelPubic: () => ({
+    text: "The <b>pubic tubercles are level</b>.",
+    test: p => p.region === "pelvis" && !p.pubic
+  }),
+  lat: (which, side) => ({
+    text: which === "sf"
+      ? `The <b>standing flexion test is positive on the ${SIDE[side]}</b>.`
+      : `The <b>ASIS compression test is positive on the ${SIDE[side]}</b> — greater resistance on that side.`,
+    test: p => p.region === "pelvis" && p.lat === side
+  }),
+};
+const DIRW = {sup:"superior", inf:"inferior", med:"closer to the midline",
+              lat:"farther from the midline", far:"farther from the natal fold",
+              near:"closer to the natal fold"};
+
+/* ══════════════════════════════════════════════════════════════════════════
+   GENERATION
+   ══════════════════════════════════════════════════════════════════════════ */
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const coin = () => Math.random() < 0.5;
+function shuffle(a){ a = a.slice();
+  for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a; }
+
+function sacralFindings(p){
+  const out = [];
+  out.push(F.gap(p.gap));
+  if (p.sulcus.side === "both"){
+    out.push(F.sulcus(p.sulcus));
+    out.push(F.ila(p.ila));
+  } else {
+    // describe each landmark from a randomly chosen side — the finding is a
+    // comparison, so either phrasing is true
+    const ss = coin() ? p.sulcus.side : other(p.sulcus.side);
+    out.push(F.sulcus({side:ss, deep: ss === p.sulcus.side ? p.sulcus.deep : !p.sulcus.deep}));
+    const is = coin() ? p.ila.side : other(p.ila.side);
+    out.push(F.ila({side:is, post: is === p.ila.side ? p.ila.post : !p.ila.post}));
+  }
+  out.push(F.seated(p.seated));
+  out.push(coin() ? F.spring(p.spring) : F.sphinx(p.sphinx));
+  return out;
+}
+
+function pelvicFindings(p){
+  const out = [];
+  out.push(F.lat(coin() ? "sf" : "asis", p.lat));
+  for (const mark of ["asis","psis","pubic"]){
+    if (!p[mark]) continue;
+    const s = coin() ? "L" : "R";
+    out.push(F.land(mark, s, p[mark][s]));
+  }
+  if (!p.asis) out.push(F.levelInnom());
+  else if (coin()) out.push(F.levelPubic());
+  return out;
+}
+
+/* The solver. A case is only issued if exactly one diagnosis in the whole
+   answer list is consistent with every finding shown. */
+function solve(findings, pool){
+  return pool.filter(p => findings.every(f => f.test(p)));
+}
+
+function makeCase(mode){
+  for (let attempt = 0; attempt < 200; attempt++){
+    const region = mode === "both" ? (coin() ? "sacrum" : "pelvis") : mode;
+    const truth = region === "sacrum" ? pick(ALL_SACRAL) : pick(ALL_PELVIC);
+    const findings = region === "sacrum" ? sacralFindings(truth) : pelvicFindings(truth);
+    const pool = poolFor(mode);
+    const hits = solve(findings, pool);
+    if (hits.length === 1 && hits[0].label === truth.label)
+      return {truth, findings:shuffle(findings), region};
+  }
+  return null;   // never reached in practice; the check script proves it
+}
+
+function poolFor(mode){
+  return mode === "sacrum" ? ALL_SACRAL
+       : mode === "pelvis" ? ALL_PELVIC
+       : ALL_SACRAL.concat(ALL_PELVIC);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   WHY — a derivation written from the model, not a stored paragraph
+   ══════════════════════════════════════════════════════════════════════════ */
+function why(p){
+  if (p.region === "pelvis"){
+    const t = PELVIC_TYPES.find(x => p.label.endsWith(x.name));
+    const steps = [`The test of laterality is positive on the <b>${SIDE[p.lat]}</b>, so the dysfunction belongs to that side — whichever side the landmarks were described from.`];
+    if (t.asis) steps.push(`On the ${SIDE[p.lat]}: ASIS <b>${DIRW[t.asis]}</b> and PSIS <b>${DIRW[t.psis]}</b>.`);
+    if (t.pubic) steps.push(`The pubic tubercle is <b>${DIRW[t.pubic]}</b> on the ${SIDE[p.lat]}.`);
+    steps.push(t.id === "antrot"  ? "ASIS down with PSIS up is the innominate rotated <b>forward</b> like a wheel."
+             : t.id === "postrot" ? "ASIS up with PSIS down is the innominate rotated <b>backward</b>."
+             : t.id === "supshear"? "Both landmarks up means the whole bone translated <b>cephalad</b> — a shear, not a rotation."
+             : t.id === "infshear"? "Both landmarks down means the whole bone translated <b>caudad</b>."
+             : t.id === "inflare" ? "The ASIS pulled toward the midline while the PSIS swung away from the natal fold — rotation about a vertical axis."
+             : t.id === "outflare"? "The ASIS swung away from the midline while the PSIS came in toward the natal fold."
+             : "Only the pubic tubercle is displaced, so the shear is at the <b>symphysis</b> rather than the whole innominate.");
+    return steps;
+  }
+  const steps = [];
+  steps.push(p.gap === "level"
+    ? "The ILAs are level and every landmark is symmetrical, so this is a <b>bilateral</b> dysfunction — six of the ten are gone in one line."
+    : p.gap === "under"
+      ? "The ILAs are less than a thumb apart, so this is a <b>torsion</b> rather than a unilateral dysfunction."
+      : "The ILAs are more than a thumb apart, so the sacrum has <b>sidebent</b> — a unilateral flexion or extension, not a torsion.");
+  if (p.gap === "level"){
+    steps.push(p.spring
+      ? "The spring test is <b>positive</b>, so the base is stuck posterior: <b>extension</b>."
+      : "The spring test is <b>negative</b>, so the base still travels anteriorly: <b>flexion</b>.");
+  } else if (p.gap === "over"){
+    steps.push(`Both findings land on the <b>${SIDE[p.sulcus.side]}</b>, and the seated flexion test is positive there, which is the side a unilateral dysfunction is named for.`);
+    steps.push(p.ila.post
+      ? "That ILA is <b>posterior and inferior</b> — the ILA fell, so <b>flexion</b>."
+      : "That ILA is <b>anterior and superior</b> — the ILA rose, so <b>extension</b>.");
+  } else {
+    const ax = p.ila.side, free = other(ax);
+    steps.push(`The seated flexion test is positive on the <b>${SIDE[free]}</b>, and in a torsion the axis is <b>opposite</b> the positive side — so this is a <b>${SIDE[ax]} oblique axis</b>.`);
+    steps.push(`The ${SIDE[free]} sulcus is <b>${p.sulcus.deep ? "deep" : "shallow"}</b>, so that corner of the base went <b>${p.sulcus.deep ? "anterior" : "posterior"}</b>. The sacrum rotates away from a deep sulcus, so rotation is to the <b>${SIDE[p.sulcus.deep ? other(free) : free]}</b>.`);
+    steps.push(`Axis ${ax}, rotation ${p.sulcus.deep ? other(free) : free} — ${ax === (p.sulcus.deep ? other(free) : free) ? "the same letter twice, so a <b>forward</b> torsion; sphinx evens out and the spring is soft." : "different letters, so a <b>backward</b> torsion; sphinx worsens and the spring is hard."}`);
+    steps.push(`The see-saw check: the corner ON the axis cannot move, so the abnormal ILA had to be the ${SIDE[ax]} one — and it is.`);
+  }
+  return steps;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   UI
+   ══════════════════════════════════════════════════════════════════════════ */
+const KEY = "sacrum_pelvis_cases_v1";
+let MODE = "both", CUR = null, PICKED = null;
+let TALLY = load();
+
+function load(){
+  try { return JSON.parse(localStorage.getItem(KEY)) || {n:0, ok:0}; }
+  catch(e){ return {n:0, ok:0}; }
+}
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(TALLY)); } catch(e){} }
+function resetScore(){ TALLY = {n:0, ok:0}; save(); drawScore(); }
+function drawScore(){
+  const pct = TALLY.n ? Math.round(100*TALLY.ok/TALLY.n) : 0;
+  document.getElementById("score").textContent =
+    TALLY.n ? `${TALLY.ok} / ${TALLY.n}  ·  ${pct}%` : "0 / 0";
+}
+function setMode(m){
+  MODE = m;
+  for (const k of ["both","sacrum","pelvis"])
+    document.getElementById("m-" + k).classList.toggle("on", k === m);
+  next();
+}
+function next(){ CUR = makeCase(MODE); PICKED = null; render(); window.scrollTo(0,0); }
+
+function answer(label){
+  if (PICKED) return;
+  PICKED = label;
+  TALLY.n++; if (label === CUR.truth.label) TALLY.ok++;
+  save(); drawScore(); render();
+  /* the answer panel sits below twenty-six buttons, so bring it into view
+     rather than making him hunt for it after every case */
+  const el = document.querySelector(".ans");
+  if (el && el.scrollIntoView) el.scrollIntoView({block:"nearest", behavior:"smooth"});
+}
+
+function optionGroups(){
+  const out = [];
+  if (MODE !== "pelvis") out.push(["Sacrum", ALL_SACRAL]);
+  if (MODE !== "sacrum") out.push(["Pelvis", ALL_PELVIC]);
+  return out;
+}
+
+function render(){
+  if (!CUR){ document.getElementById("app").innerHTML =
+    "<div class='case'>Could not build a case — reload the page.</div>"; return; }
+  const t = CUR.truth, right = PICKED === t.label;
+  const groups = optionGroups().map(([name, list]) => `
+    <h2 class="gh">${name}</h2>
+    <div class="grid">${list.map(p => {
+      let cls = "opt";
+      if (PICKED){
+        if (p.label === t.label) cls += " ok";
+        else if (p.label === PICKED) cls += " no";
+        else cls += " dim";
+      }
+      return `<button class="${cls}" ${PICKED ? "disabled" : ""}
+        onclick="answer(${JSON.stringify(p.label).replace(/"/g,"&quot;")})">${Cap(p.label)}</button>`;
+    }).join("")}</div>`).join("");
+
+  document.getElementById("app").innerHTML = `
+    <div class="case">
+      <span class="tag ${CUR.region === "sacrum" ? "s" : "p"}">${CUR.region === "sacrum" ? "Sacral case" : "Pelvic case"}</span>
+      <div class="stem">On osteopathic structural examination you find:</div>
+      <ul class="find">${CUR.findings.map(f => `<li><span>${f.text}</span></li>`).join("")}</ul>
+    </div>
+    ${groups}
+    ${PICKED ? `
+      <div class="ans ${right ? "ok" : "no"}">
+        <span class="v">${right ? "Correct" : "Not quite"} — ${Cap(t.label)}</span>
+        <ol>${why(t).map(s => `<li>${s}</li>`).join("")}</ol>
+        <div class="acts">
+          <button class="on" onclick="next()">Next case →</button>
+          <span class="hint">or press <kbd>Enter</kbd></span>
+        </div>
+      </div>` : `
+      <div class="acts"><span class="hint">Pick a diagnosis. <kbd>Esc</kbd> skips to a new case.</span></div>`}
+  `;
+}
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Enter" && PICKED){ e.preventDefault(); next(); }
+  if (e.key === "Escape"){ e.preventDefault(); next(); }
+});
+
+drawScore();
+next();
+
+/* exposed so the check script can hammer the generator outside a browser */
+if (typeof module !== "undefined") module.exports =
+  {makeCase, solve, poolFor, ALL_SACRAL, ALL_PELVIC, why};
+</script>
+</body>
+</html>

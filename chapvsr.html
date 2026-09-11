@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>Chapman &amp; Viscerosomatic Drill</title>
+<!--
+  ============================================================================
+  CHAPMAN'S POINTS + VISCEROSOMATIC REFLEXES — a standalone drill.
+
+  Deliberately independent of Exam_Site_Template.html: no shared engine, no
+  shared storage key, one file, no network. Open it and it works.
+
+  DATA PROVENANCE — every number below comes from one of:
+   · the September 2024 NBOME innervation chart, slide 25 of
+     OPP1facilitatedsegment+VSR.pdf, which that lecture states is the chart
+     COMLEX will use;
+   · the abridged board-testable Chapman table, slides 13-16 of
+     Chapman's Reflexes Widboom 2025.pdf;
+   · the OPP IV midterm review tables (endocrine points) and the OPP in
+     Nephrology deck (renal and GU points);
+   · Sam's uploaded summary diagram ("chaps and vsrs.webp"), used to lay out
+     the two ladders and to cross-check.
+  Where two sources disagree the item carries a `conflict` field and the app
+  shows it rather than silently picking one.
+  ============================================================================
+-->
+<style>
+:root{
+  --bg:#07080f; --bg2:#0d0f1a; --card:#131627; --card2:#191d33;
+  --line:#242a45; --line2:#2f3757;
+  --ink:#f2f4ff; --ink2:#c2c8e6; --mut:#7d85ab; --faint:#848db0;   /* lifted: --faint carries the small uppercase labels */
+  --cy:#22d3ee; --bl:#60a5fa; --vi:#a78bfa; --pk:#f472b6; --am:#fbbf24;
+  --ok:#34d399; --bad:#fb7185;
+  --glow:0 0 0 1px rgba(255,255,255,.04), 0 18px 50px -20px rgba(0,0,0,.9);
+  --hue:var(--cy);
+  /* Translucent surface tints. Every faint background in the sheet uses one of
+     these rather than a literal rgba, so the whole thing inverts with one
+     block below instead of fourteen scattered overrides. */
+  --t1:rgba(255,255,255,.03); --t2:rgba(255,255,255,.07);
+  --t3:rgba(255,255,255,.11); --t4:rgba(255,255,255,.045);
+  --tHov:rgba(255,255,255,.055);
+  --onAccent:#04121a;          /* text that sits on a filled accent */
+  --wash1:rgba(34,211,238,.12); --wash2:rgba(167,139,250,.13); --wash3:rgba(244,114,182,.09);
+}
+/* ── LIGHT THEME ───────────────────────────────────────────────────────────
+   Sam asked for this and it is the default; the toggle in the header flips it
+   and the choice is remembered. Accent hues are darkened rather than reused,
+   because a colour that reads well on near-black is far too pale on white. */
+body.light{
+  --bg:#f5f7fc; --bg2:#eaeef7; --card:#ffffff; --card2:#f7f9fd;
+  --line:#e0e5f1; --line2:#c3cbde;
+  /* Greys and accents are darker than their dark-mode counterparts, not reused:
+     these all sit on near-white and every one below clears 4.5:1 for body text
+     or 4:1 for the small uppercase labels. */
+  --ink:#0f1320; --ink2:#333c58; --mut:#535b78; --faint:#5f6885;
+  --cy:#0a7188; --bl:#1d4ed8; --vi:#6d28d9; --pk:#be1e6d; --am:#8a4d05;
+  --ok:#037653; --bad:#c31839;
+  --glow:0 0 0 1px rgba(20,30,60,.035), 0 12px 32px -18px rgba(30,45,90,.3);
+  --t1:rgba(20,30,60,.028); --t2:rgba(20,30,60,.07);
+  --t3:rgba(20,30,60,.12); --t4:rgba(20,30,60,.06);
+  --tHov:rgba(20,30,60,.05);
+  --onAccent:#ffffff;
+  --wash1:rgba(14,138,168,.10); --wash2:rgba(124,58,237,.09); --wash3:rgba(209,37,122,.07);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:
+    radial-gradient(1100px 620px at 12% -8%, var(--wash1), transparent 60%),
+    radial-gradient(900px 560px at 92% 4%, var(--wash2), transparent 62%),
+    radial-gradient(800px 500px at 50% 108%, var(--wash3), transparent 60%),
+    var(--bg);
+  background-attachment:fixed;
+  color:var(--ink);
+  font:15px/1.5 ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-variant-numeric:tabular-nums;
+  overflow-x:hidden;
+}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+.wrap{max-width:1180px;margin:0 auto;padding:16px 16px 90px}
+
+/* ── top bar ─────────────────────────────────────────────────────────── */
+.top{display:flex;align-items:center;gap:12px;padding:12px 2px 16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.dot{width:11px;height:11px;border-radius:50%;background:var(--cy);
+  box-shadow:0 0 16px var(--cy);flex:none;animation:pulse 2.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(.82)}}
+.brand h1{font-size:15.5px;font-weight:800;letter-spacing:-.01em;white-space:nowrap}
+.brand .s{font-size:11px;color:var(--mut);font-weight:600;white-space:nowrap}
+.sp{flex:1;min-width:6px}
+.tabs{display:flex;gap:3px;background:var(--t1);padding:3px;border-radius:12px;
+  border:1px solid var(--line);flex-wrap:wrap}
+.tabs button{padding:7px 13px;border-radius:9px;font-size:12.5px;font-weight:700;color:var(--mut);
+  transition:.15s;white-space:nowrap}
+.tabs button:hover{color:var(--ink2)}
+.tabs button.on{background:var(--card);color:var(--ink);
+  box-shadow:0 1px 3px rgba(20,30,60,.12), 0 0 0 1px var(--line)}
+.tabs button.theme{font-size:11px;letter-spacing:.08em;color:var(--faint);padding:7px 11px}
+.tabs button.theme:hover{color:var(--ink2)}
+
+/* ── generic bits ────────────────────────────────────────────────────── */
+.card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);
+  border-radius:16px;box-shadow:var(--glow)}
+.pad{padding:16px 18px}
+h2{font-size:19px;font-weight:800;letter-spacing:-.02em;margin-bottom:3px}
+h3{font-size:12.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+.lede{color:var(--ink2);font-size:13.5px;line-height:1.62}
+.mut{color:var(--mut)}
+.chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:800;
+  letter-spacing:.05em;border:1px solid var(--line2);color:var(--ink2);white-space:nowrap}
+.chip.vsr{color:var(--cy);border-color:rgba(34,211,238,.4);background:rgba(34,211,238,.09)}
+.chip.chp{color:var(--pk);border-color:rgba(244,114,182,.4);background:rgba(244,114,182,.09)}
+.chip.warn{color:var(--am);border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.09)}
+kbd{display:inline-block;min-width:19px;padding:1px 5px;border-radius:5px;background:var(--t2);
+  border:1px solid var(--line2);border-bottom-width:2px;font:700 11px/1.5 ui-monospace,monospace;
+  color:var(--ink2);text-align:center}
+
+/* ── home ────────────────────────────────────────────────────────────── */
+.hero{display:grid;grid-template-columns:1.35fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:820px){.hero{grid-template-columns:1fr}}
+.modegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:11px}
+.mode{position:relative;overflow:hidden;text-align:left;padding:15px 16px 16px;border-radius:15px;
+  background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);
+  transition:.16s;display:flex;flex-direction:column;gap:5px;min-height:118px}
+.mode:hover{transform:translateY(-2px);border-color:var(--line2)}
+.mode .ic{font-size:9.5px;font-weight:800;letter-spacing:.13em;color:var(--c,var(--cy));line-height:1}
+.mode .t{font-size:15px;font-weight:800;letter-spacing:-.01em}
+.mode .d{font-size:12px;color:var(--mut);line-height:1.5}
+.mode::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c,var(--cy))}
+.mode:hover::after{box-shadow:0 0 18px var(--c,var(--cy))}
+.statrow{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:12px}
+.stat{background:var(--t1);border:1px solid var(--line);border-radius:12px;padding:10px 11px}
+.stat .v{font-size:21px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.stat .l{font-size:9.5px;font-weight:800;letter-spacing:.1em;color:var(--faint);text-transform:uppercase;margin-top:2px}
+.bar{height:7px;border-radius:99px;background:var(--t2);overflow:hidden;display:flex;margin-top:10px}
+.bar i{display:block;height:100%}
+
+/* scope picker */
+.scopes{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
+.scope{padding:8px 13px;border-radius:10px;border:1.5px solid var(--line);font-size:12.5px;font-weight:700;
+  color:var(--mut);transition:.15s}
+.scope:hover{border-color:var(--line2);color:var(--ink2)}
+.scope.on{border-color:var(--cy);color:var(--cy);background:rgba(34,211,238,.1)}
+.scope.sw{display:inline-flex;align-items:center;gap:7px}
+.scope.sw .tick{font-size:11px;font-weight:900;width:15px;text-align:center;opacity:.75}
+.scope.sw.on{border-color:var(--ok);color:var(--ok);background:rgba(3,118,83,.1)}
+body:not(.light) .scope.sw.on{background:rgba(52,211,153,.1)}
+
+/* the full-list answer pool: many short values at once */
+.pool{display:flex;flex-wrap:wrap;gap:7px}
+.pill{padding:10px 14px;border-radius:11px;border:1.5px solid var(--line2);background:var(--t1);
+  font-size:13.5px;font-weight:700;font-family:ui-monospace,monospace;letter-spacing:.01em;
+  transition:.12s;min-height:44px;color:var(--ink)}
+.pill:hover:not(:disabled){border-color:var(--hue);background:var(--tHov)}
+.pill.ok{border-color:var(--ok);background:rgba(52,211,153,.16);color:var(--ok)}
+body.light .pill.ok{background:rgba(3,118,83,.12)}
+.pill.no{border-color:var(--bad);background:rgba(251,113,133,.15);color:var(--bad)}
+body.light .pill.no{background:rgba(195,24,57,.1)}
+.pill.dim{opacity:.4}
+.pill:disabled{cursor:default}
+/* a used-up try: struck through and out of the way, but still visible so you
+   can see what you have already ruled out */
+.pill.gone{opacity:.55;text-decoration:line-through;text-decoration-thickness:1.5px}
+/* Chapman labels are prose-ish, so let those wrap instead of forcing a scroll */
+.pool.wide .pill{font-family:inherit;font-weight:600}
+/* One value per row, read top to bottom — but flowed into newspaper columns so
+   the whole list is on screen at once. No inner scrollbox: a list you have to
+   scroll inside a card you also scroll is the worst of both. */
+.pool.col{display:block;column-gap:12px;padding:0}
+.pool.col .pill{width:100%;text-align:left;display:flex;align-items:center;gap:9px;
+  min-height:34px;padding:6px 11px;margin:0 0 5px;break-inside:avoid;-webkit-column-break-inside:avoid}
+.pool.col.c2{column-count:2}
+.pool.col.c3{column-count:3}
+/* prose labels need the width, so they only take a third column on a wide window */
+.pool.col.wide.c3{column-count:2}
+@media(min-width:860px){ .pool.col.wide.c3{column-count:3} }
+@media(max-width:859px){ .pool.col.c3{column-count:2} .pool.col.wide{column-count:1} }
+@media(max-width:560px){ .pool.col.c2,.pool.col.c3{column-count:1} }
+.pool.col .pill .n{font-family:ui-monospace,monospace;font-size:11px;color:var(--faint);
+  min-width:20px;flex:none}
+.pool.col .pill.ok .n,.pool.col .pill.no .n{color:inherit}
+.triesleft{font-size:12px;color:var(--am);font-weight:700;margin:10px 0 0}
+
+/* ── the memory map: one spine, every mark on it ─────────────────────── */
+.map{margin-top:9px;padding-top:9px;border-top:1px dashed var(--line2)}
+.maplab{font-size:10px;font-weight:800;letter-spacing:.13em;color:var(--faint);margin-bottom:6px}
+.strip{display:flex;flex-wrap:wrap;gap:3px}
+.cel{width:33px;height:27px;border-radius:7px;border:1.5px solid var(--line2);
+  border-bottom-width:4px;background:var(--t1);display:flex;align-items:center;justify-content:center;
+  font-size:10.5px;font-weight:800;font-family:ui-monospace,monospace;color:var(--faint)}
+.cel.b-c{border-bottom-color:var(--vi)}
+.cel.b-s{border-bottom-color:var(--bl)}
+.cel.b-i{border-bottom-color:var(--ok)}
+.cel.insym{background:rgba(34,211,238,.2);border-color:var(--cy);color:var(--ink)}
+body.light .cel.insym{background:rgba(10,113,136,.15)}
+.cel.insym.b-c{border-bottom-color:var(--vi)}
+.cel.insym.b-s{border-bottom-color:var(--bl)}
+.cel.insym.b-i{border-bottom-color:var(--ok)}
+.cel.ispost{color:var(--ink);border-color:var(--am);outline:2px solid var(--am);outline-offset:1px}
+.cel.isant{border-top-width:4px;border-top-color:var(--pk)}
+.keys{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:7px;font-size:10.5px;color:var(--mut)}
+.keys span{display:flex;align-items:center;gap:5px}
+.keys i{width:13px;height:13px;border-radius:4px;border:1.5px solid var(--line2);flex:none}
+.keys i.ksym{background:rgba(34,211,238,.35);border-color:var(--cy)}
+body.light .keys i.ksym{background:rgba(10,113,136,.25)}
+.keys i.kpost{border-color:var(--am);outline:1.5px solid var(--am);outline-offset:1px}
+.keys i.kant{border-top:4px solid var(--pk)}
+.keys i.kc{border-bottom:4px solid var(--vi)}
+.keys i.ks{border-bottom:4px solid var(--bl)}
+.keys i.ki{border-bottom:4px solid var(--ok)}
+
+/* ── quiz ────────────────────────────────────────────────────────────── */
+.qwrap{max-width:900px;margin:0 auto}
+.qtop{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.pips{display:flex;gap:4px;flex-wrap:wrap;flex:1;min-width:80px}
+.pip{width:20px;height:5px;border-radius:99px;background:var(--t3);transition:.2s}
+.pip.ok{background:var(--ok)} .pip.no{background:var(--bad)} .pip.cur{background:var(--hue);box-shadow:0 0 10px var(--hue)}
+.qcard{position:relative;overflow:hidden;border-radius:20px;padding:22px 22px 20px;
+  background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);box-shadow:var(--glow)}
+.qcard::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;
+  background:linear-gradient(90deg,var(--hue),transparent)}
+.qask{font-size:11px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--hue);margin-bottom:7px}
+.qstem{font-size:25px;font-weight:800;letter-spacing:-.025em;line-height:1.22;margin-bottom:4px}
+@media(max-width:560px){.qstem{font-size:21px}}
+.qsub{font-size:12.5px;color:var(--mut);margin-bottom:16px}
+.opts{display:grid;gap:8px}
+.opt{display:flex;align-items:center;gap:11px;padding:13px 14px;border-radius:13px;text-align:left;
+  border:1.5px solid var(--line2);background:var(--t1);transition:.13s;font-size:14.5px;
+  font-weight:600;min-height:50px}
+.opt:hover:not(:disabled){border-color:var(--hue);background:var(--tHov)}
+.opt .k{width:23px;height:23px;border-radius:7px;flex:none;display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;background:var(--t2);color:var(--ink2)}
+.opt .tx{flex:1;min-width:0}
+.opt .vt{font-size:10px;font-weight:800;letter-spacing:.09em}
+.opt.ok{border-color:var(--ok);background:rgba(52,211,153,.14)}
+.opt.ok .k{background:var(--ok);color:#fff}
+.opt.ok .vt{color:var(--ok)}
+.opt.no{border-color:var(--bad);background:rgba(251,113,133,.13)}
+.opt.no .k{background:var(--bad);color:#fff}
+.opt.no .vt{color:var(--bad)}
+.opt.dim{opacity:.38}
+.opt:disabled{cursor:default}
+.typerow{display:flex;gap:9px;margin-top:2px;flex-wrap:wrap}
+.typerow input{flex:1;min-width:170px;padding:14px 15px;border-radius:13px;border:1.5px solid var(--line2);
+  background:var(--t1);color:var(--ink);font:700 17px/1.2 ui-monospace,monospace;letter-spacing:.02em}
+.typerow input:focus{outline:none;border-color:var(--hue);box-shadow:0 0 0 3px rgba(34,211,238,.14)}
+.rev{margin-top:11px;padding:11px 14px;border-radius:13px;border-left:3px solid var(--hue);
+  background:var(--t1);font-size:13.5px;line-height:1.55;color:var(--ink2)}
+.rev b{color:var(--ink)}
+.rev .hk{display:block;margin-top:7px;padding-top:7px;border-top:1px dashed var(--line2);color:var(--am);font-size:12.5px}
+.acts{display:flex;gap:9px;margin-top:11px;flex-wrap:wrap;align-items:center}
+.btn{padding:12px 20px;border-radius:12px;font-size:14px;font-weight:800;border:1.5px solid var(--line2);
+  transition:.14s;min-height:46px}
+.btn:hover{border-color:var(--ink2)}
+.btn.go{background:var(--hue);border-color:var(--hue);color:var(--onAccent)}
+.btn.go:hover{filter:brightness(1.12)}
+.btn.sm{padding:8px 14px;font-size:12.5px;min-height:38px}
+
+/* ── ladders ─────────────────────────────────────────────────────────── */
+.ladwrap{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:900px){.ladwrap{grid-template-columns:1fr}}
+.lad{--rowh:26px}
+.ladrow{display:flex;align-items:center;gap:8px;height:var(--rowh);border-radius:8px;padding:0 8px;
+  transition:.12s;cursor:default;border:1.5px solid transparent}
+.ladrow .n{width:38px;flex:none;font-size:11.5px;font-weight:800;color:var(--faint);text-align:right}
+.ladrow .ln{flex:1;height:3px;border-radius:2px;background:rgba(96,165,250,.35);min-width:20px}
+.ladrow .tag{font-size:11.5px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  max-width:56%;font-weight:600}
+.ladrow.pick{cursor:pointer}
+.ladrow.pick:hover{background:var(--tHov);border-color:var(--line2)}
+.ladrow.sel{border-color:var(--hue);background:rgba(34,211,238,.1)}
+.ladrow.hit{border-color:var(--ok);background:rgba(52,211,153,.16)}
+.ladrow.miss{border-color:var(--bad);background:rgba(251,113,133,.15)}
+.ladrow.lit .n{color:var(--ink)}
+
+/* ── reference ───────────────────────────────────────────────────────── */
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.tools input{flex:1;min-width:180px;padding:11px 14px;border-radius:11px;border:1.5px solid var(--line2);
+  background:var(--t1);color:var(--ink);font-size:14px}
+.tools input:focus{outline:none;border-color:var(--cy)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);
+  padding:9px 10px;border-bottom:1px solid var(--line2);position:sticky;top:0;background:var(--card);z-index:2}
+td{padding:9px 10px;border-bottom:1px solid var(--t4);vertical-align:top;color:var(--ink2)}
+tr:hover td{background:var(--t1)}
+td.org{color:var(--ink);font-weight:700;white-space:nowrap}
+td .lvl{color:var(--cy);font-weight:800;font-family:ui-monospace,monospace;white-space:nowrap}
+td .pt{color:var(--pk);font-weight:700}
+.tblscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tblscroll table{min-width:640px}
+
+/* ── hooks ───────────────────────────────────────────────────────────── */
+.hooks{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:11px}
+.hook{padding:14px 16px;border-radius:14px;background:linear-gradient(180deg,var(--card),var(--card2));
+  border:1px solid var(--line);border-left:3px solid var(--am)}
+.hook .t{font-size:13.5px;font-weight:800;color:var(--am);margin-bottom:5px}
+.hook .b{font-size:12.5px;line-height:1.6;color:var(--ink2)}
+.hook.c2{border-left-color:var(--cy)} .hook.c2 .t{color:var(--cy)}
+.hook.c3{border-left-color:var(--vi)} .hook.c3 .t{color:var(--vi)}
+.hook.c4{border-left-color:var(--pk)} .hook.c4 .t{color:var(--pk)}
+
+/* ── results ─────────────────────────────────────────────────────────── */
+.big{font-size:64px;font-weight:800;letter-spacing:-.045em;line-height:1}
+.misslist{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.missrow{display:flex;gap:10px;align-items:baseline;padding:9px 12px;border-radius:10px;
+  background:rgba(251,113,133,.08);border:1px solid rgba(251,113,133,.2);font-size:12.5px;flex-wrap:wrap}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,16px);opacity:0;pointer-events:none;
+  background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:11px;font-size:13px;font-weight:700;
+  transition:.24s;z-index:60;max-width:90vw;text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.fx{position:fixed;inset:0;pointer-events:none;z-index:50}
+.fx.good{animation:goodflash .5s ease-out}
+.fx.bad{animation:badflash .42s ease-out}
+@keyframes goodflash{0%{box-shadow:inset 0 0 0 0 rgba(52,211,153,.28)}
+  35%{box-shadow:inset 0 0 130px 0 rgba(52,211,153,.28)}100%{box-shadow:inset 0 0 0 0 transparent}}
+@keyframes badflash{0%,100%{box-shadow:inset 0 0 0 0 transparent}
+  30%{box-shadow:inset 0 0 130px 0 rgba(251,113,133,.26)}}
+.shake{animation:shk .34s}
+@keyframes shk{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}
+  40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="fx" id="fx"></div>
+<div class="wrap">
+
+  <div class="top">
+    <div class="brand">
+      <span class="dot"></span>
+      <div>
+        <h1>Chapman &amp; Viscerosomatic Drill</h1>
+        <div class="s" id="brandsub">levels, points, and the tricks that hold them</div>
+      </div>
+    </div>
+    <span class="sp"></span>
+    <div class="tabs" id="tabs"></div>
+  </div>
+
+  <div id="view"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════
+   DATA
+   Fields:
+     org    organ / structure name
+     sym    sympathetic viscerosomatic level      (null if not applicable)
+     para   parasympathetic supply
+     gang   collateral ganglion, where one applies
+     ant    anterior Chapman point                (null if not on the list)
+     post   posterior Chapman point
+     side   'R' | 'L' | 'both' | null  — for Chapman points with a named side
+     rib    [a,b] intercostal space, for the rib ladder drill
+     grp    grouping used by the scope filters
+     hook   the memory device tied to this item
+     conflict  printed when two course sources disagree
+   ═════════════════════════════════════════════════════════════════════ */
+const DATA = [
+/* ---- head and neck ---- */
+{org:"Head and neck", sym:"T1-T4", para:"CN III, VII, IX, X", grp:"thorax",
+ hook:"Top of the body, top of the chart."},
+{org:"Middle ear", ant:"Superior clavicle, just lateral to where it crosses the 1st rib", post:"Tip of TP of C1",
+ grp:"headneck", hook:"Ear and tonsils go to C1."},
+{org:"Pharynx", ant:"Anterior 1st rib, ¾ inch toward the sternum from the clavicle", post:"TP of C2",
+ grp:"headneck", hook:"Pharynx, larynx and sinuses go to C2."},
+{org:"Tonsils", ant:"Between the 1st and 2nd ribs, close to the sternum", post:"Posterior surface of TP of C1",
+ grp:"headneck", rib:[1,2], hook:"Ear and tonsils go to C1."},
+{org:"Larynx", ant:"Superior 2nd rib, 2-3 inches from the sternum", post:"TP of C2", grp:"headneck",
+ hook:"Everything above the thyroid is on rib 1 or 2 in front, C1 or C2 behind."},
+{org:"Sinuses", ant:"3½ inches from sternum on superior 2nd rib and in the 1st intercostal space", post:"TP of C2, and under the angle of the jaw back to TP of C1",
+ grp:"headneck", hook:"Sinuses are the only point with a second posterior location, under the jaw."},
+
+/* ---- thorax ---- */
+{org:"Heart", sym:"T1-T5", para:"Vagus", grp:"thorax",
+ hook:"Left-sided reflex — most disease is left ventricular."},
+{org:"Myocardium", ant:"2nd-3rd intercostal space, close to the sternum", post:"Intertransverse T2-T3",
+ rib:[2,3], grp:"thorax", hook:"The 2nd-3rd space holds four organs; only context tells them apart."},
+{org:"Lung", sym:"T2-T7", para:"Vagus", grp:"thorax",
+ hook:"Same range as the upper limb: T2-T7."},
+{org:"Upper extremity", sym:"T2-T7", para:"none", grp:"thorax",
+ hook:"Same range as the lung, and no parasympathetic supply at all."},
+{org:"Oesophagus", sym:"T3-T6", para:"Vagus", ant:"2nd-3rd intercostal space, close to the sternum",
+ post:"Posterior surface of TP of T2", rib:[2,3], grp:"thorax",
+ hook:"The only gut structure above the celiac band."},
+{org:"Bronchus", ant:"2nd-3rd intercostal space, close to the sternum", post:"Posterior surface of TP of T2",
+ rib:[2,3], grp:"thorax", hook:"Shares the 2nd-3rd space with thyroid, oesophagus and myocardium."},
+{org:"Thyroid", ant:"2nd-3rd intercostal space, close to the sternum", post:"Posterior surface of TP of T2",
+ rib:[2,3], grp:"endocrine", hook:"Thyroid 2, pancreas 7, adrenal 11 — they descend."},
+{org:"Upper lung", ant:"Between ribs 3 and 4, near the sternum", post:"Intertransverse T3-T4", rib:[3,4],
+ grp:"thorax", hook:"Ribs 3-4 in front, T3-T4 behind. The numbers always match."},
+{org:"Lower lung", ant:"Between ribs 4 and 5, near the sternum", post:"Intertransverse T4-T5", rib:[4,5],
+ grp:"thorax", hook:"Ribs 4-5 in front, T4-T5 behind."},
+
+/* ---- upper GI, the celiac band ---- */
+{org:"Stomach", sym:"T5-T9", para:"Vagus", gang:"Celiac", grp:"uppergi",
+ hook:"Left side of the celiac block, with spleen and pancreatic tail."},
+{org:"Stomach (acidity)", ant:"Ribs 5-6, mid-clavicular line to sternum, LEFT", post:"Intertransverse T5-T6",
+ side:"L", rib:[5,6], grp:"uppergi", hook:"Ribs 5-6 in front, T5-T6 behind."},
+{org:"Stomach (peristalsis)", ant:"Ribs 6-7, mid-clavicular line to sternum, LEFT",
+ post:"Intertransverse T6-T7 on the LEFT", side:"L", rib:[6,7], grp:"uppergi",
+ hook:"Acidity is one space higher than peristalsis."},
+{org:"Liver", sym:"T5-T9", para:"Vagus", gang:"Celiac", ant:"Ribs 5-6, mid-clavicular line to sternum, RIGHT",
+ post:"Intertransverse T5-T6 on the RIGHT", side:"R", rib:[5,6], grp:"uppergi",
+ hook:"Right side of the celiac block, mirroring stomach acidity on the left."},
+{org:"Liver and gallbladder", ant:"Ribs 6-7, mid-clavicular line to sternum, RIGHT",
+ post:"Intertransverse T6-T7 on the RIGHT", side:"R", rib:[6,7], grp:"uppergi",
+ hook:"Mirrors stomach peristalsis on the left, one space below liver."},
+{org:"Gallbladder", sym:"T5-T9", para:"Vagus", gang:"Celiac", grp:"uppergi",
+ hook:"Murphy sign plus right upper quadrant pain means T5-T9."},
+{org:"Spleen", sym:"T5-T9", para:"Vagus", gang:"Celiac", ant:"Ribs 7-8 on the LEFT, near the cartilage junction",
+ post:"Intertransverse T7-T8 on the LEFT", side:"L", rib:[7,8], grp:"uppergi",
+ hook:"Same rib space as pancreas — side is the only discriminator."},
+{org:"Pancreas", sym:"T5-T9", para:"Vagus", gang:"Celiac", ant:"Ribs 7-8 on the RIGHT, near the cartilage",
+ post:"Intertransverse T7-T8 on the RIGHT", side:"R", rib:[7,8], grp:"endocrine",
+ hook:"Head right, tail left — the Chapman point follows the head."},
+{org:"Duodenum (before ligament of Treitz)", sym:"T5-T9", para:"Vagus", gang:"Celiac", grp:"uppergi",
+ hook:"The ligament of Treitz ends the foregut. Before it, T5-T9."},
+{org:"Pylorus", ant:"Anterior aspect of the sternal body", post:"Right 10th rib, lateral to the costotransverse junction",
+ side:"R", grp:"uppergi", hook:"The only posterior point on a rib. Sternum in front, 10th rib behind."},
+
+/* ---- mid GI ---- */
+{org:"Jejunum", sym:"T10-T11", para:"Vagus", gang:"Superior mesenteric", grp:"midgi",
+ hook:"After the ligament of Treitz the band drops to T10-T11."},
+{org:"Ileum", sym:"T10-T11", para:"Vagus", gang:"Superior mesenteric", grp:"midgi",
+ hook:"Midgut band, superior mesenteric ganglion."},
+{org:"Small intestines", ant:"Intercostal spaces 8-9, 9-10 and 10-11, both sides",
+ post:"Intertransverse T8-T9, T9-T10 and T10-T11", side:"both", rib:[8,11], grp:"midgi",
+ hook:"Three spaces, three levels, same numbers, both sides."},
+{org:"Ascending colon and proximal ⅔ transverse", sym:"T10-T11", para:"Vagus", gang:"Superior mesenteric",
+ grp:"midgi", hook:"The splenic flexure ends the midgut."},
+{org:"Appendix", sym:"T10-T11", para:"Vagus", gang:"Superior mesenteric",
+ ant:"Superior aspect near the tip of the 12th rib on the RIGHT", post:"Intertransverse T11-T12",
+ side:"R", grp:"midgi", hook:"Right-sided, and low — 12th rib in front.",
+ conflict:"The NBOME chart groups the appendix with the ascending colon at T10-T11; the uploaded summary and much OMM teaching give T12. Know both."},
+{org:"Colon", ant:"Band 1-2 inches wide, greater trochanter to within 1 inch of the patella, both thighs",
+ post:"TP of L2 to TP of L4, a triangle reaching to the iliac crest", side:"both", grp:"lowgi",
+ hook:"An IT band point means colon."},
+
+/* ---- lower GI ---- */
+{org:"Distal ⅓ transverse colon", sym:"T12-L2", para:"S2-S4", gang:"Inferior mesenteric", grp:"lowgi",
+ hook:"Past the splenic flexure the parasympathetic supply turns sacral."},
+{org:"Descending and sigmoid colon", sym:"T12-L2", para:"S2-S4", gang:"Inferior mesenteric", grp:"lowgi",
+ hook:"Hindgut band."},
+{org:"Rectum", sym:"T12-L2", para:"S2-S4", gang:"Inferior mesenteric", ant:"Lesser trochanter of the femur",
+ post:"Sacrum, close to the ilium at the lower end of the iliosacral joint", grp:"lowgi",
+ hook:"Lesser trochanter — the only point there."},
+
+/* ---- renal and GU ---- */
+{org:"Kidneys", sym:"T10-L1", para:"Vagus", gang:"Superior mesenteric",
+ ant:"1 inch lateral and 1 inch above the umbilicus, bilaterally", post:"Intertransverse T12-L1",
+ side:"both", grp:"renal",
+ hook:"Reaches one lower than its band — T10-L1. Lesser splanchnic nerve."},
+{org:"Adrenal medulla", sym:"T10-T11", para:"Vagus", gang:"Superior mesenteric", grp:"endocrine",
+ hook:"A sympathetic ganglion that stayed put, so it shares the kidney's band."},
+{org:"Adrenals", ant:"2-2½ inches above and 1 inch either side of the umbilicus (5-7 cm above, 2-3 cm lateral)",
+ post:"Intertransverse T11-T12", side:"both", grp:"endocrine",
+ hook:"The gland caps the kidney, so it is higher in both planes: T11-T12 versus T12-L1."},
+{org:"Upper ureters", sym:"T10-T11", para:"Vagus", gang:"Superior mesenteric", grp:"renal",
+ hook:"Still vagal, which surprises people."},
+{org:"Lower ureters", sym:"T12-L1", para:"S2-S4", gang:"Inferior mesenteric", grp:"renal",
+ hook:"The handover point — below here the parasympathetic supply is sacral."},
+{org:"Bladder", sym:"T11-L2", para:"S2-S4", gang:"Inferior mesenteric", ant:"Tissues around the umbilicus",
+ post:"Superior aspect of the TP of L2", grp:"renal",
+ hook:"Starts higher than the lower ureter that feeds it."},
+{org:"Urethra", ant:"Medial pubic ramus near the superior pubic symphysis", post:"Superior aspect of the TP of L2",
+ grp:"renal", hook:"Same posterior level as bladder, very different anterior point.",
+ conflict:"The OPP I board-testable table gives L2; the nephrology deck gives L3. Prefer L2."},
+{org:"Gonads", sym:"T10-T11", para:"S2-S4", gang:"Superior mesenteric", grp:"pelvis",
+ hook:"They developed beside the kidney and descended — this is also loin to groin."},
+{org:"Ovaries", ant:"Along the round ligament, superior to inferior border of the pubic ramus",
+ post:"Intertransverse T9-T10 and T10-T11", grp:"pelvis",
+ hook:"Anterior point followed the organ down; posterior point stayed at the level of origin."},
+{org:"Uterus and cervix", sym:"T10-L2", para:"S2-S4", gang:"Inferior mesenteric", grp:"pelvis",
+ hook:"The widest range on the chart — it straddles both lower bands."},
+{org:"Uterus", ant:"Superior aspect of the junction of pubic ramus and ischium", post:"Between the PSIS and the SP of L5",
+ grp:"pelvis", hook:"Pelvic organs report to L5, the PSIS or the sacrum."},
+{org:"Broad ligament", ant:"Trochanter down the lateral femur to within 2 inches of the knee",
+ post:"Between the PSIS and the SP of L5", grp:"pelvis", hook:"Thigh in front, L5 behind."},
+{org:"Prostate", sym:"T11-L2", para:"S2-S4", gang:"Inferior mesenteric",
+ ant:"Trochanter down the lateral femur to within 2 inches of the knee, and lateral to the symphysis",
+ post:"Between the PSIS and the SP of L5", grp:"pelvis",
+ hook:"Sacral, not vagal — so occiput and atlas treatment cannot reach it."},
+{org:"Erectile tissue", sym:"T11-L2", para:"S2-S4", gang:"Inferior mesenteric", grp:"pelvis",
+ hook:"Point and Shoot: Parasympathetic erection, Sympathetic emission."},
+{org:"Lower extremity", sym:"T10-L2", para:"none", grp:"pelvis",
+ hook:"Same range as the pelvic viscera, and no parasympathetic supply."},
+];
+
+/* ══════════════════════════════════════════════════════════════════════
+   SHORT LABELS
+   The full anterior and posterior descriptions are prose — fine to read on a
+   reveal, useless as a list of thirty things to choose between. These are the
+   same points said in three or four words, and they are what "Pick from the
+   list" offers. Kept as a separate table so the prose above stays verbatim.
+   ═════════════════════════════════════════════════════════════════════ */
+const SHORT = {
+  "Middle ear":              ["Clavicle at the 1st rib",     "C1"],
+  "Pharynx":                 ["Anterior 1st rib",            "C2"],
+  "Tonsils":                 ["Ribs 1-2",                    "C1"],
+  "Larynx":                  ["2nd rib",                     "C2"],
+  "Sinuses":                 ["1st ICS and 2nd rib",         "C2, and C1 under the jaw"],
+  "Thyroid":                 ["Ribs 2-3",                    "T2"],
+  "Bronchus":                ["Ribs 2-3",                    "T2"],
+  "Oesophagus":              ["Ribs 2-3",                    "T2"],
+  "Myocardium":              ["Ribs 2-3",                    "T2-T3"],
+  "Upper lung":              ["Ribs 3-4",                    "T3-T4"],
+  "Lower lung":              ["Ribs 4-5",                    "T4-T5"],
+  "Stomach (acidity)":       ["Ribs 5-6, LEFT",              "T5-T6"],
+  "Liver":                   ["Ribs 5-6, RIGHT",             "T5-T6, RIGHT"],
+  "Stomach (peristalsis)":   ["Ribs 6-7, LEFT",              "T6-T7, LEFT"],
+  "Liver and gallbladder":   ["Ribs 6-7, RIGHT",             "T6-T7, RIGHT"],
+  "Pancreas":                ["Ribs 7-8, RIGHT",             "T7-T8, RIGHT"],
+  "Spleen":                  ["Ribs 7-8, LEFT",              "T7-T8, LEFT"],
+  "Small intestines":        ["Ribs 8-9, 9-10, 10-11",       "T8-T9, T9-T10, T10-T11"],
+  "Pylorus":                 ["Sternal body",                "Right 10th rib"],
+  "Appendix":                ["12th rib, RIGHT",             "T11-T12"],
+  "Adrenals":                ["Above the umbilicus",         "T11-T12"],
+  "Kidneys":                 ["Beside the umbilicus",        "T12-L1"],
+  "Bladder":                 ["Around the umbilicus",        "L2"],
+  "Urethra":                 ["Pubic symphysis",             "L2"],
+  "Colon":                   ["Iliotibial band, both thighs","L2 to L4"],
+  "Ovaries":                 ["Round ligament",              "T9-T10 and T10-T11"],
+  "Uterus":                  ["Pubic ramus and ischium",     "PSIS to L5"],
+  "Broad ligament":          ["Lateral femur",               "PSIS to L5"],
+  "Prostate":                ["Lateral femur and symphysis", "PSIS to L5"],
+  "Rectum":                  ["Lesser trochanter",           "Sacrum at the iliosacral joint"],
+};
+DATA.forEach(d => {
+  const sh = SHORT[d.org]; if (!sh) return;
+  if (d.ant)  d.antS  = sh[0];
+  if (d.post) d.postS = sh[1];
+});
+
+/* memory hooks page ------------------------------------------------------ */
+const HOOKS = [
+ ["c2","The level follows the organ down the body",
+  "Head T1-4, heart T1-5, lung T2-7, oesophagus T3-6, foregut T5-9, midgut T10-11, hindgut and pelvis T12-L2. If you can place the organ anatomically you can already put the level within a band."],
+ ["c2","The three bands ARE the three ganglia",
+  "Foregut = celiac = T5-T9. Midgut = superior mesenteric = T10-T11. Hindgut = inferior mesenteric = T12-L2. You are re-using embryology, not learning innervation."],
+ ["c2","Two landmarks give you both boundaries",
+  "The <b>ligament of Treitz</b> ends the foregut. The <b>splenic flexure</b> ends the midgut — and it is also where the vagus hands over to the pelvic splanchnics. One landmark, two answers."],
+ ["c2","The number ladder is 5, 9, 11, 2",
+  "T5, T9, T11, L2 are the only edges. Above T5 is chest. T5-T9 celiac. T10-T11 superior mesenteric. T12-L2 everything pelvic."],
+ ["","The testis was once the kidney's neighbour",
+  "Gonads are T10-T11 because they develop beside the kidney and descend, dragging the nerve supply with them. Same reason ureteric colic runs loin to groin, and the same reason the ovarian Chapman point is on the pubic ramus but its posterior partner is up at T9-T11."],
+ ["","The urinary tract walks down the spine as it descends the body",
+  "Kidney T10-L1 → upper ureter T10-T11 → lower ureter T12-L1 → bladder T11-L2. The parasympathetic supply hands from vagus to sacral at the lower ureter."],
+ ["","T-P-A descends",
+  "<b>T</b>hyroid T1-4, <b>P</b>ancreas T5-9, <b>A</b>drenal T10-11. The Chapman literature groups them as the PTA syndrome; reorder to TPA and it is already in anatomical order."],
+ ["c4","The anterior rib space and the posterior level share a number",
+  "Ribs 5-6 in front → T5-T6 behind. Ribs 7-8 → T7-T8. Exact for nine organs. Learn the anterior point and the posterior one is free."],
+ ["c4","Going down the ribs, in order",
+  "2-3 thyroid, bronchus, oesophagus, myocardium · 3-4 upper lung · 4-5 lower lung · 5-6 stomach acidity and liver · 6-7 stomach peristalsis and liver-gallbladder · 7-8 pancreas and spleen · 8 to 11 small intestines."],
+ ["c4","Pancreas right, spleen left, same rib space",
+  "Both in the 7th-8th space, both at T7-T8. <b>Side is the only discriminator</b> — which makes it the cleanest possible exam question in the set."],
+ ["c4","The pelvic organs put their points on the thigh",
+  "Broad ligament, prostate, uterus, rectum and colon all sit on the femur or pubis in front, and at L5, the PSIS or the sacrum behind. An IT band point means colon."],
+ ["c4","The head and neck group lives on ribs 1 and 2",
+  "Ear and tonsils → C1. Pharynx, larynx and sinuses → C2. Only the sinuses have a second posterior point, under the angle of the jaw."],
+ ["c3","Right is hepatobiliary, left is gastric and splenic",
+  "Right: liver, gallbladder, duodenum, pancreatic head, appendix, caecum, ascending colon. Left: stomach, spleen, pancreatic tail. The heart is a left-sided reflex because most disease is left ventricular."],
+ ["c3","Adrenal is higher than kidney in both planes",
+  "The gland caps the kidney. Anterior: adrenal 2-2½ inches above the umbilicus, kidney 1 inch. Posterior: adrenal T11-T12, kidney T12-L1."],
+ ["c3","Everything else is vagus; touching the bottom line is sacral",
+  "From the summary diagram: if the level bar reaches L2, the parasympathetic supply is the pelvic splanchnic nerves at S2-S4. Everything else is vagus."],
+ ["c3","Vagal findings live at C1-C2",
+  "Palpable viscerosomatic findings from vagal afferents appear in the upper cervical region. That is why occiput and atlas treatment reaches kidney, ureter, ovary and ascending colon — but never the prostate."],
+ ["","Acute is wet and warm, chronic is dry and hard",
+  "Acute: raised temperature, moisture, skin drag, boggy fusiform muscle, no firm end point. Chronic: thickened skin, rapid fading red reflex, hard tense muscle, definite end feel."],
+ ["","Tenderness is what separates a Chapman point from a fat globule",
+  "And posterior points sit midway between the spinous process and the tip of the transverse process — deeper and more oedematous than the anterior ones."],
+];
+
+/* ══════════════════════════════════════════════════════════════════════
+   STORAGE — per-item performance, so the drill can weight toward misses
+   ═════════════════════════════════════════════════════════════════════ */
+const KEY = "chapman_vsr_drill_v1";
+let PROG = {};
+try { PROG = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { PROG = {}; }
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(PROG)); } catch (e) {} }
+function rec(k){ return PROG[k] || (PROG[k] = {n:0, ok:0, streak:0}); }
+function mastery(k){
+  const p = PROG[k]; if (!p || !p.n) return 0;
+  // three in a row right counts as held; otherwise scale by accuracy
+  return Math.min(1, (p.streak >= 3 ? 1 : p.ok / p.n * (p.streak >= 2 ? 1 : .8)));
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   QUESTION GENERATION
+   Each fact is its own drillable item, keyed "<organ>|<field>", so mastery
+   is tracked per fact rather than per organ.
+   ═════════════════════════════════════════════════════════════════════ */
+/* `short` names the property the pick-from-the-list mode offers instead of the
+   full prose. `tag` is what the on/off switch is labelled. */
+const FIELDS = [
+  {f:"sym",  ask:"Sympathetic level",       tag:"Sympathetic",    q:d=>`Sympathetic level for <b>${d.org}</b>?`,        kind:"vsr"},
+  {f:"para", ask:"Parasympathetic supply",  tag:"Parasympathetic",q:d=>`Parasympathetic supply to <b>${d.org}</b>?`,    kind:"vsr"},
+  {f:"gang", ask:"Collateral ganglion",     tag:"Ganglion",       q:d=>`Which collateral ganglion serves <b>${d.org}</b>?`, kind:"vsr"},
+  {f:"ant",  ask:"Anterior Chapman point",  tag:"Anterior point", short:"antS",  q:d=>`Anterior Chapman point for <b>${d.org}</b>?`,   kind:"chp"},
+  {f:"post", ask:"Posterior Chapman point", tag:"Posterior point",short:"postS", q:d=>`Posterior Chapman point for <b>${d.org}</b>?`,  kind:"chp"},
+];
+
+/* ── which kinds of question to ask ──────────────────────────────────────
+   Sam does not need parasympathetic, so it starts OFF. Every field can be
+   switched independently, the setting is remembered in its own key, and it
+   applies to every mode and every scope rather than being one more mode. */
+const FKEY = "chapman_vsr_drill_fields";
+let FIELD_ON = {sym:true, para:false, gang:true, ant:true, post:true};
+try {
+  const saved = JSON.parse(localStorage.getItem(FKEY) || "null");
+  if (saved) FIELD_ON = Object.assign(FIELD_ON, saved);
+} catch (e) {}
+function saveFields(){ try { localStorage.setItem(FKEY, JSON.stringify(FIELD_ON)); } catch (e) {} }
+function toggleField(f){
+  const on = Object.keys(FIELD_ON).filter(k => FIELD_ON[k]);
+  if (on.length === 1 && on[0] === f){ toast("Keep at least one kind of question on"); return; }
+  FIELD_ON[f] = !FIELD_ON[f]; saveFields(); renderHome();
+}
+const SCOPES = [
+  {id:"all",      label:"Everything"},
+  {id:"vsr",      label:"Viscerosomatic only"},
+  {id:"chp",      label:"Chapman only"},
+  {id:"endocrine",label:"Endocrine"},
+  {id:"renal",    label:"Renal & GU"},
+  {id:"gi",       label:"Gastrointestinal"},
+  {id:"thorax",   label:"Thorax & head"},
+  {id:"weak",     label:"My weak spots"},
+];
+function inScope(d, f, scope){
+  const fd = FIELDS.find(x => x.f === f);
+  if (scope === "all") return true;
+  if (scope === "vsr" || scope === "chp") return fd.kind === scope;
+  if (scope === "gi") return ["uppergi","midgi","lowgi"].includes(d.grp);
+  if (scope === "thorax") return ["thorax","headneck"].includes(d.grp);
+  if (scope === "weak") return mastery(d.org + "|" + f) < .7;
+  return d.grp === scope;
+}
+function pool(scope){
+  const out = [];
+  DATA.forEach(d => FIELDS.forEach(fd => {
+    if (FIELD_ON[fd.f] && d[fd.f] && inScope(d, fd.f, scope))
+      out.push({d, f:fd.f, key:d.org + "|" + fd.f});
+  }));
+  return out;
+}
+/* Ignores the switches — used for the mastery totals on the home screen, which
+   should describe the whole subject rather than the current selection. */
+function everyItem(){
+  const out = [];
+  DATA.forEach(d => FIELDS.forEach(fd => {
+    if (d[fd.f]) out.push({d, f:fd.f, key:d.org + "|" + fd.f});
+  }));
+  return out;
+}
+function allItems(){ return pool("all"); }
+
+/* Weighted draw: unseen first, then whatever is being missed. */
+function weightOf(it){
+  const p = PROG[it.key];
+  if (!p || !p.n) return 5;
+  if (p.streak >= 3) return 0.6;
+  return 1 + 4 * (1 - p.ok / p.n) + (p.streak === 0 ? 1.5 : 0);
+}
+function drawItems(scope, n, filter){
+  const src = filter ? pool(scope).filter(filter) : pool(scope);
+  if (!src.length) return [];
+  const picked = [], bag = src.slice();
+  while (picked.length < Math.min(n, src.length) && bag.length){
+    let total = 0; bag.forEach(x => total += weightOf(x));
+    let r = Math.random() * total, i = 0;
+    while (i < bag.length - 1 && (r -= weightOf(bag[i])) > 0) i++;
+    picked.push(bag.splice(i,1)[0]);
+  }
+  return picked;
+}
+/* Distractors come from the same field across the dataset, so a wrong answer
+   is always a plausible answer to that question rather than obvious filler. */
+function distractors(it, n){
+  const want = it.d[it.f];
+  const others = [...new Set(DATA.map(d => d[it.f]).filter(v => v && v !== want))];
+  const out = [];
+  while (out.length < n && others.length) out.push(others.splice(Math.floor(Math.random()*others.length),1)[0]);
+  return out;
+}
+const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const esc = s => String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+/* ══════════════════════════════════════════════════════════════════════
+   STATE + ROUTER
+   ═════════════════════════════════════════════════════════════════════ */
+let S = { tab:"home", scope:"all", mode:null, run:null };
+const $ = id => document.getElementById(id);
+const V = () => $("view");
+
+const TABS = [["home","Drill"],["ref","Reference"],["ladder","Ladders"],["hooks","Tricks"]];
+function renderTabs(){
+  $("tabs").innerHTML = TABS.map(([k,l]) =>
+    `<button class="${S.tab===k?"on":""}" onclick="go('${k}')">${l}</button>`).join("")
+    + `<button class="theme" onclick="toggleTheme()"
+         title="Switch to ${theme()==="light"?"dark":"light"}">${theme()==="light"?"DARK":"LIGHT"}</button>`;
+}
+/* Light is the default because that is what was asked for; the choice is kept
+   in its own storage key so clearing drill progress does not reset it. */
+const THKEY = "chapman_vsr_drill_theme";
+function theme(){
+  try { return localStorage.getItem(THKEY) || "light"; } catch (e) { return "light"; }
+}
+function applyTheme(){
+  document.body.classList.toggle("light", theme() === "light");
+  const m = document.querySelector('meta[name="color-scheme"]');
+  if (m) m.content = theme();
+}
+function toggleTheme(){
+  try { localStorage.setItem(THKEY, theme() === "light" ? "dark" : "light"); } catch (e) {}
+  applyTheme(); renderTabs();
+}
+function go(t){ S.tab = t; S.run = null; renderTabs(); render(); window.scrollTo(0,0); }
+function render(){
+  if (S.run) return renderRun();
+  renderTabs();
+  if (S.tab === "home")   return renderHome();
+  if (S.tab === "ref")    return renderRef();
+  if (S.tab === "ladder") return renderLadders();
+  if (S.tab === "hooks")  return renderHooks();
+}
+function toast(m){ const t = $("toast"); t.textContent = m; t.classList.add("on");
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove("on"), 1700); }
+function flash(good){
+  const f = $("fx"); f.className = "fx " + (good ? "good" : "bad");
+  setTimeout(() => f.className = "fx", 520);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   HOME
+   ═════════════════════════════════════════════════════════════════════ */
+/* Short text tags rather than emoji: they render in every font, and they say
+   what the mode actually does, which a pictogram does not. */
+const MODES = [
+  {id:"rapid",  ic:"4 CHOICE", t:"Rapid fire",   c:"var(--cy)", d:"Multiple choice, twenty at a time. Keys 1-4. The fastest way to cover ground."},
+  {id:"reverse",ic:"REVERSED", t:"Backwards",    c:"var(--vi)", d:"You get the level or the point — name the organ. Much harder, and much closer to how questions are written."},
+  {id:"type",   ic:"FREE TEXT",t:"Type it",      c:"var(--pk)", d:"No options. Type the level from memory. Free recall is what actually sticks."},
+  {id:"locate", ic:"ON A MAP", t:"Locate it",    c:"var(--am)", d:"Click the rib space or the vertebral level on the ladder. Spatial, and it builds the picture you want in the exam."},
+  {id:"survive",ic:"3 LIVES",  t:"Survival",     c:"var(--bad)",d:"Three lives, no mercy, runs until you die. Mixed question types."},
+  {id:"blitz",  ic:"60 SEC",   t:"Sixty seconds",c:"var(--ok)", d:"As many as you can in one minute. Good for the last hour before an exam."},
+  {id:"list",   ic:"FULL LIST",t:"Pick from the list",c:"var(--bl)",
+   d:"No four options — every level and every Chapman point that exists, in one list. Three tries. Ganglia are not asked here; a list of three teaches you nothing."},
+];
+function renderHome(){
+  const items = everyItem();
+  const held = items.filter(i => mastery(i.key) >= 1).length;
+  const seen = items.filter(i => (PROG[i.key]||{}).n).length;
+  const tot  = items.reduce((a,i) => a + ((PROG[i.key]||{}).n||0), 0);
+  const ok   = items.reduce((a,i) => a + ((PROG[i.key]||{}).ok||0), 0);
+  const acc  = tot ? Math.round(100*ok/tot) : 0;
+  const pctHeld = Math.round(100*held/items.length);
+  const weak = items.filter(i => { const p = PROG[i.key]; return p && p.n && p.ok/p.n < .6; }).length;
+
+  V().innerHTML = `
+  <div class="hero">
+    <div class="card pad">
+      <h2>Drill the levels until they are automatic</h2>
+      <p class="lede" style="margin-top:5px">
+        ${items.length} facts across ${DATA.length} structures — sympathetic levels, parasympathetic supply,
+        collateral ganglia, and anterior and posterior Chapman points. The draw is weighted: anything you have
+        not seen comes first, then whatever you keep missing. Three right in a row and an item is counted as held.
+      </p>
+      <div class="statrow">
+        <div class="stat"><div class="v" style="color:var(--ok)">${pctHeld}<span style="font-size:13px">%</span></div><div class="l">Held</div></div>
+        <div class="stat"><div class="v">${seen}<span style="font-size:13px;color:var(--faint)">/${items.length}</span></div><div class="l">Seen</div></div>
+        <div class="stat"><div class="v" style="color:${acc>=80?'var(--ok)':acc>=60?'var(--am)':'var(--bad)'}">${tot?acc+'%':'—'}</div><div class="l">Accuracy</div></div>
+        <div class="stat"><div class="v" style="color:var(--bad)">${weak}</div><div class="l">Weak</div></div>
+      </div>
+      <div class="bar">
+        <i style="width:${pctHeld}%;background:var(--ok)"></i>
+        <i style="width:${Math.max(0,Math.round(100*seen/items.length)-pctHeld)}%;background:var(--am)"></i>
+      </div>
+      <h3 style="margin-top:16px">What to ask</h3>
+      <div class="scopes">${FIELDS.map(f =>
+        `<button class="scope sw ${FIELD_ON[f.f]?"on":""}" onclick="toggleField('${f.f}')">
+           <span class="tick">${FIELD_ON[f.f]?"&#10003;":"&#215;"}</span>${f.tag}</button>`).join("")}</div>
+      <div class="mut" style="font-size:11.5px;margin-top:7px">
+        Switched-off questions never appear, in any mode.${FIELD_ON.para?"":" Parasympathetic is off."}
+      </div>
+
+      <h3 style="margin-top:16px">What to draw from</h3>
+      <div class="scopes">${SCOPES.map(s =>
+        `<button class="scope ${S.scope===s.id?"on":""}" onclick="setScope('${s.id}')">${s.label}</button>`).join("")}</div>
+      <div class="mut" style="font-size:11.5px;margin-top:9px">
+        ${pool(S.scope).length} facts in this selection${S.scope==="weak"?" · anything below 70% mastery":""}
+      </div>
+    </div>
+    <div class="card pad">
+      <h3>Start here if you are cramming</h3>
+      <p class="lede" style="margin-top:7px;font-size:12.5px">
+        <b>Rapid fire</b> to cover everything once. Then <b>Backwards</b>, because exam stems give you the finding
+        and ask for the organ. Then set the scope to <b>My weak spots</b> and run <b>Type it</b> until the list
+        empties. <b>Locate it</b> is worth doing once for the picture it builds.
+      </p>
+      <h3 style="margin-top:15px">Keys</h3>
+      <p class="lede" style="margin-top:7px;font-size:12.5px">
+        <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd> answer · <kbd>↵</kbd> next ·
+        <kbd>Esc</kbd> quit the run
+      </p>
+      ${shakyPanel()}
+      <div style="margin-top:15px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn sm" onclick="resetProgress()">Reset progress</button>
+      </div>
+    </div>
+  </div>
+  <div class="modegrid">
+    ${MODES.map(m => `
+      <button class="mode" style="--c:${m.c}" onclick="start('${m.id}')">
+        <span class="ic">${m.ic}</span>
+        <span class="t">${m.t}</span>
+        <span class="d">${m.d}</span>
+      </button>`).join("")}
+  </div>`;
+}
+/* The facts you keep getting wrong, named. Knowing the percentage is not
+   actionable; knowing that it is the pancreas point and the lower ureter is. */
+function shakyPanel(){
+  const rows = allItems()
+    .map(i => ({i, p:PROG[i.key]}))
+    .filter(x => x.p && x.p.n >= 2 && x.p.streak < 2)
+    .sort((a,b) => (a.p.ok/a.p.n) - (b.p.ok/b.p.n))
+    .slice(0, 6);
+  if (!rows.length) return `<h3 style="margin-top:15px">Still shaky</h3>
+    <p class="lede" style="margin-top:7px;font-size:12.5px;color:var(--mut)">
+      Nothing flagged yet — run a set and whatever you miss twice will be listed here.</p>`;
+  return `<h3 style="margin-top:15px">Still shaky</h3>
+    <div class="misslist" style="margin-top:8px">
+      ${rows.map(({i,p}) => `<div class="missrow">
+        <b style="color:var(--ink)">${esc(i.d.org)}</b>
+        <span class="mut">${FIELDS.find(f=>f.f===i.f).ask}</span>
+        <span style="flex:1"></span>
+        <span class="mut">${p.ok}/${p.n}</span>
+      </div>`).join("")}
+    </div>
+    <button class="btn sm" style="margin-top:9px" onclick="setScope('weak');start('type')">Drill just these</button>`;
+}
+function setScope(s){ S.scope = s; if (S.tab === "home" && !S.run) renderHome(); }
+function resetProgress(){
+  if (!confirm("Clear every score and start again?")) return;
+  PROG = {}; save(); renderHome(); toast("Progress cleared");
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   THE RUN
+   ═════════════════════════════════════════════════════════════════════ */
+function start(mode){
+  const p = pool(S.scope);
+  if (!p.length){ toast("Nothing in that selection — pick another scope"); return; }
+  const cfg = {
+    rapid:  {n:20, kind:"mc"},
+    reverse:{n:20, kind:"rev"},
+    type:   {n:15, kind:"type"},
+    locate: {n:15, kind:"loc"},
+    survive:{n:999,kind:"mix", lives:3},
+    blitz:  {n:999,kind:"mix", secs:60},
+    list:   {n:20, kind:"list"},
+  }[mode];
+  const items = cfg.kind === "loc"  ? drawLocatable(S.scope, cfg.n)
+              : cfg.kind === "list" ? drawItems(S.scope, cfg.n, x => LIST_FIELDS.includes(x.f))
+              : drawItems(S.scope, cfg.n);
+  if (!items.length){
+    toast(cfg.kind === "list" ? "List mode asks levels and Chapman points — turn one of those on"
+                              : "No questions of that type in this selection");
+    return;
+  }
+  S.mode = mode;
+  S.run = { mode, cfg, items, i:0, right:0, wrong:0, miss:[], picked:null, done:false,
+            lives: cfg.lives || Infinity, secs: cfg.secs || 0, t0: Date.now() };
+  if (cfg.secs){
+    clearInterval(S.run.timer);
+    S.run.timer = setInterval(() => {
+      if (!S.run) return;
+      S.run.secs--;
+      const el = $("clock"); if (el) el.textContent = S.run.secs + "s";
+      if (S.run.secs <= 0) finish();
+    }, 1000);
+  }
+  render(); window.scrollTo(0,0);
+}
+/* Locate mode needs an item whose answer can be placed on one of the ladders. */
+function drawLocatable(scope, n){
+  const src = pool(scope).filter(x =>
+    (x.f === "sym" && parseLevel(x.d.sym)) || (x.f === "ant" && x.d.rib));
+  if (!src.length) return [];
+  const out = [], bag = src.slice();
+  while (out.length < Math.min(n, src.length) && bag.length){
+    let total = 0; bag.forEach(x => total += weightOf(x));
+    let r = Math.random()*total, i = 0;
+    while (i < bag.length-1 && (r -= weightOf(bag[i])) > 0) i++;
+    out.push(bag.splice(i,1)[0]);
+  }
+  return out;
+}
+/* "T5-T9" -> {from:"T5", to:"T9"}; "T10-L1" works too. */
+function parseLevel(s){
+  if (!s) return null;
+  const m = String(s).match(/^([TL]\d+)\s*-\s*([TL]\d+)$/);
+  return m ? {from:m[1], to:m[2]} : null;
+}
+const SPINE = ["T1","T2","T3","T4","T5","T6","T7","T8","T9","T10","T11","T12","L1","L2"];
+
+function nextQ(){
+  const R = S.run;
+  R.picked = null; R.done = false; R.tried = null; R.i++;
+  if (R.i >= R.items.length && R.cfg.n !== 999) return finish();
+  if (R.i >= R.items.length && R.cfg.n === 999) R.items = R.items.concat(drawItems(S.scope, 20));
+  render();
+}
+function finish(){
+  const R = S.run; if (!R) return;
+  clearInterval(R.timer); R.finished = true;
+  renderResult();
+}
+function quitRun(){ if (S.run) clearInterval(S.run.timer); S.run = null; render(); window.scrollTo(0,0); }
+
+function answer(val, correct){
+  const R = S.run; if (!R || R.done) return;
+  const it = R.items[R.i];
+  const good = val === correct;
+  R.done = true; R.picked = val;
+  const p = rec(it.key); p.n++;
+  if (good){ p.ok++; p.streak++; R.right++; }
+  else { p.streak = 0; R.wrong++; R.miss.push(it); R.lives--; }
+  save(); flash(good);
+  if (!good && R.lives <= 0){ render(); setTimeout(finish, 900); return; }
+  render();
+  if (!good){ const c = document.querySelector(".qcard"); if (c){ c.classList.add("shake");
+    setTimeout(() => c.classList.remove("shake"), 360); } }
+}
+
+function renderRun(){
+  const R = S.run;
+  if (R.finished) return renderResult();
+  const it = R.items[R.i];
+  const fd = FIELDS.find(f => f.f === it.f);
+  const kind = R.cfg.kind === "mix"
+    ? (["mc","rev","type"][R.i % 3]) : R.cfg.kind;
+  const hue = {rapid:"var(--cy)",reverse:"var(--vi)",type:"var(--pk)",locate:"var(--am)",
+               survive:"var(--bad)",blitz:"var(--ok)",list:"var(--bl)"}[R.mode];
+  const total = R.cfg.n === 999 ? R.right + R.wrong + 1 : R.items.length;
+  const pips = R.cfg.n === 999 ? "" : R.items.map((_,k) =>
+    `<span class="pip ${k<R.i?(R.miss.includes(R.items[k])?"no":"ok"):k===R.i?"cur":""}"></span>`).join("");
+
+  let body = "";
+  if (kind === "loc")        body = locBody(it, R);
+  else if (kind === "list")  body = listBody(it, R);
+  else if (kind === "type")  body = typeBody(it, R);
+  else if (kind === "rev")   body = revBody(it, R);
+  else                       body = mcBody(it, R);
+
+  V().innerHTML = `
+  <div class="qwrap" style="--hue:${hue}">
+    <div class="qtop">
+      <span class="chip" style="border-color:${hue};color:${hue}">${MODES.find(m=>m.id===R.mode).t}</span>
+      ${R.cfg.lives ? `<span class="chip warn">${"♥".repeat(Math.max(0,R.lives))||"—"}</span>` : ""}
+      ${R.cfg.secs ? `<span class="chip warn" id="clock">${R.secs}s</span>` : ""}
+      <span class="chip">${R.right}✓ ${R.wrong}✗</span>
+      <div class="pips">${pips}</div>
+      <button class="btn sm" onclick="quitRun()">Quit</button>
+    </div>
+    <div class="qcard">${body}</div>
+  </div>`;
+  const inp = $("tin"); if (inp) inp.focus();
+}
+
+/* ---- multiple choice ---- */
+function mcBody(it, R){
+  const fd = FIELDS.find(f => f.f === it.f);
+  const correct = it.d[it.f];
+  if (!R.opts || R.optsFor !== R.i) { R.opts = shuffle([correct, ...distractors(it,3)]); R.optsFor = R.i; }
+  return `
+    <div class="qask">${fd.ask}</div>
+    <div class="qstem">${fd.q(it.d)}</div>
+    <div class="qsub">${it.d.side ? "Note the side — it is part of the answer." : "&nbsp;"}</div>
+    <div class="opts">${R.opts.map((o,i) => optBtn(o, i, correct, R)).join("")}</div>
+    ${R.done ? revBox(it) : `<div class="qsub" style="margin:12px 0 0">Press <kbd>1</kbd>–<kbd>4</kbd></div>`}`;
+}
+/* ---- reverse: give the value, ask for the organ ---- */
+function revBody(it, R){
+  const fd = FIELDS.find(f => f.f === it.f);
+  const correct = it.d.org;
+  if (!R.opts || R.optsFor !== R.i){
+    const others = [...new Set(DATA.filter(d => d[it.f] && d.org !== correct).map(d => d.org))];
+    R.opts = shuffle([correct, ...shuffle(others).slice(0,3)]);
+    R.optsFor = R.i;
+  }
+  return `
+    <div class="qask">Name the structure</div>
+    <div class="qstem">Which structure has <b>${esc(it.d[it.f])}</b> as its ${fd.ask.toLowerCase()}?</div>
+    <div class="qsub">&nbsp;</div>
+    <div class="opts">${R.opts.map((o,i) => optBtn(o, i, correct, R)).join("")}</div>
+    ${R.done ? revBox(it) : `<div class="qsub" style="margin:12px 0 0">Press <kbd>1</kbd>–<kbd>4</kbd></div>`}`;
+}
+function optBtn(o, i, correct, R){
+  let cls = "opt";
+  if (R.done){
+    if (o === correct) cls += " ok";
+    else if (o === R.picked) cls += " no";
+    else cls += " dim";
+  }
+  const vt = R.done ? (o === correct ? '<span class="vt">CORRECT</span>'
+            : o === R.picked ? '<span class="vt">YOU</span>' : "") : "";
+  return `<button class="${cls}" ${R.done?"disabled":""}
+    onclick="answer(${JSON.stringify(o).replace(/"/g,"&quot;")}, ${JSON.stringify(correct).replace(/"/g,"&quot;")})">
+    <span class="k">${i+1}</span><span class="tx">${esc(o)}</span>${vt}</button>`;
+}
+/* ---- type it ---- */
+function typeBody(it, R){
+  const fd = FIELDS.find(f => f.f === it.f);
+  const correct = it.d[it.f];
+  return `
+    <div class="qask">${fd.ask} — from memory</div>
+    <div class="qstem">${fd.q(it.d)}</div>
+    <div class="qsub">${it.f==="sym" ? "Format: T5-T9, or T10-L1" : "Close enough counts — the key words are what matter."}</div>
+    ${R.done ? `
+      <div class="opts"><div class="opt ${R.correctTyped?"ok":"no"}">
+        <span class="k">${R.correctTyped?"✓":"✗"}</span>
+        <span class="tx">You wrote: <b>${esc(R.picked||"(nothing)")}</b></span></div>
+        ${R.correctTyped?"":`<div class="opt ok"><span class="k">→</span><span class="tx">${esc(correct)}</span></div>`}
+      </div>${revBox(it)}`
+    : `<div class="typerow">
+        <input id="tin" autocomplete="off" autocapitalize="off" spellcheck="false"
+               placeholder="${it.f==="sym"?"T5-T9":"type your answer"}"
+               onkeydown="if(event.key==='Enter'){event.preventDefault();submitTyped()}">
+        <button class="btn go" onclick="submitTyped()">Check</button>
+      </div>`}`;
+}
+/* Tolerant match: strip punctuation and case, accept a level written either
+   way round, and for prose answers accept a strong keyword overlap. */
+function typedMatches(given, want, field){
+  const norm = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+  const g = norm(given), w = norm(want);
+  if (!g) return false;
+  if (g === w) return true;
+  if (field === "sym" || field === "para" || field === "gang"){
+    const digits = s => (s.match(/[tls]\s?\d+/g) || []).map(x => x.replace(/\s/g,""));
+    const dg = digits(g), dw = digits(w);
+    if (dw.length && dg.length === dw.length && dw.every((d,i) => d === dg[i])) return true;
+    if (w.includes("vagus") && g.includes("vagus")) return true;
+    if (w.includes("none")  && (g === "none" || g === "no" || g.includes("none"))) return true;
+    if (w.includes("celiac") && g.includes("celiac")) return true;
+    if (w.includes("superior mesenteric") && g.includes("superior")) return true;
+    if (w.includes("inferior mesenteric") && g.includes("inferior")) return true;
+    return false;
+  }
+  const stop = new Set(["the","and","of","to","a","on","in","at","from","near","between","aspect","space","intercostal","inch","inches"]);
+  const kw = w.split(" ").filter(x => x.length > 2 && !stop.has(x));
+  if (!kw.length) return false;
+  const hit = kw.filter(x => g.includes(x)).length;
+  return hit / kw.length >= 0.6;
+}
+function submitTyped(){
+  const R = S.run; if (!R || R.done) return;
+  const it = R.items[R.i];
+  const val = ($("tin") || {}).value || "";
+  const good = typedMatches(val, it.d[it.f], it.f);
+  R.correctTyped = good; R.picked = val; R.done = true;
+  const p = rec(it.key); p.n++;
+  if (good){ p.ok++; p.streak++; R.right++; } else { p.streak = 0; R.wrong++; R.miss.push(it); R.lives--; }
+  save(); flash(good);
+  if (!good && R.lives <= 0){ render(); setTimeout(finish, 900); return; }
+  render();
+}
+/* ---- pick from the whole list ----------------------------------------
+   Every value that exists for that field, sorted anatomically where the field
+   is a spinal level. No distractor selection, so there is nothing to reason
+   away — the point is recall without a shortlist. Anterior and posterior use
+   the short labels, because thirty lines of prose is not a list you can scan. */
+function levelRank(v){
+  const m = String(v).match(/([CTLS])(\d+)/);
+  if (!m) return 900;                                   // PSIS, sacrum, ribs, prose
+  return {C:0, T:100, L:200, S:300}[m[1]] + (+m[2]);
+}
+function optionsFor(field){
+  const key = (FIELDS.find(f => f.f === field) || {}).short || field;
+  const vals = [...new Set(DATA.map(d => d[key]).filter(Boolean))];
+  return vals.sort((a,b) => (levelRank(a) - levelRank(b)) || String(a).localeCompare(String(b)));
+}
+const LIST_TRIES = 3;
+/* A full list only teaches you something when the options are the thing you are
+   placing: spinal levels and Chapman points. The three collateral ganglia are a
+   list of three and belong in the four-choice modes, so they are kept out here. */
+const LIST_FIELDS = ["sym", "post", "ant"];
+function listBody(it, R){
+  const fd = FIELDS.find(f => f.f === it.f);
+  const key = fd.short || it.f;
+  const correct = it.d[key] || it.d[it.f];   // every point has a short label, but never crash if one is added without
+  const opts = optionsFor(it.f);
+  const tried = R.tried || [];
+  const left = LIST_TRIES - tried.length;
+  /* Once it is answered the other twenty-six values have done their job, and
+     keeping them on screen pushes the map — the part worth looking at — below
+     the fold. Collapse to the answer and whatever you ruled out. */
+  const shown = R.done ? opts.filter(o => o === correct || tried.includes(o)) : opts;
+  return `
+    <div class="qask">${fd.ask} — ${opts.length} to choose from</div>
+    <div class="qstem">${fd.q(it.d)}</div>
+    ${R.done ? "" : `<div class="qsub">Every value that exists for this question is below.</div>`}
+    <div class="pool col ${shown.length<=6?"":shown.length<=14?"c2":"c3"}${(it.f==="ant"||it.f==="post")?" wide":""}">${shown.map(o => {
+      const i = opts.indexOf(o);
+      let cls = "pill";
+      const used = tried.includes(o);
+      if (R.done){
+        if (o === correct) cls += " ok";
+        else if (used) cls += " no gone";
+        else cls += " dim";
+      } else if (used) cls += " no gone";
+      return `<button class="${cls}" ${(R.done||used)?"disabled":""}
+        onclick="answerList(${JSON.stringify(o).replace(/"/g,"&quot;")}, ${JSON.stringify(correct).replace(/"/g,"&quot;")})"
+        ><span class="n">${i+1}</span><span class="tx">${esc(o)}</span></button>`;
+    }).join("")}</div>
+    ${R.done ? revBox(it)
+      : tried.length ? `<p class="triesleft">Not that one — ${left} ${left===1?"try":"tries"} left.</p>`
+      : `<div class="qsub" style="margin:10px 0 0">Three tries. A first-time hit is the only one that counts as held.</div>`}`;
+}
+/* Three tries, because eliminating two wrong levels off a full list is itself
+   worth something — but only a first-time hit counts towards mastery, so the
+   weighted draw keeps bringing back anything you had to guess at. */
+function answerList(val, correct){
+  const R = S.run; if (!R || R.done) return;
+  const it = R.items[R.i];
+  R.tried = R.tried || [];
+  if (R.tried.includes(val)) return;
+
+  if (val === correct){
+    const first = !R.tried.length;
+    R.done = true; R.picked = val;
+    const p = rec(it.key); p.n++;
+    if (first){ p.ok++; p.streak++; R.right++; }
+    else { p.streak = 0; R.wrong++; R.miss.push(it); }
+    save(); flash(first);
+    render(); scrollToAnswer();
+    return;
+  }
+
+  R.tried.push(val);
+  if (R.tried.length >= LIST_TRIES){
+    R.done = true; R.picked = val;
+    const p = rec(it.key); p.n++; p.streak = 0; R.wrong++; R.miss.push(it); R.lives--;
+    save(); flash(false); render(); scrollToAnswer();
+    if (R.lives <= 0) setTimeout(finish, 900);
+    return;
+  }
+  flash(false); render();
+  const c = document.querySelector(".qcard");
+  if (c){ c.classList.add("shake"); setTimeout(() => c.classList.remove("shake"), 360); }
+}
+/* The answer can sit below the fold in a twenty-seven row list. */
+function scrollToAnswer(){
+  const el = document.querySelector(".pool.col .pill.ok");
+  if (el && el.scrollIntoView) el.scrollIntoView({block:"nearest"});
+}
+
+/* ---- locate on a ladder ---- */
+function locBody(it, R){
+  const isRib = it.f === "ant";
+  const rows = isRib
+    ? Array.from({length:11}, (_,i) => [i+1, i+2])
+    : SPINE.map(x => [x]);
+  const want = isRib ? it.d.rib : parseLevel(it.d.sym);
+  const label = isRib
+    ? `Which intercostal space holds the anterior Chapman point for <b>${it.d.org}</b>?`
+    : `Where does the sympathetic supply to <b>${it.d.org}</b> <i>begin</i>?`;
+  const hit = r => isRib
+    ? (r[0] === want[0])
+    : (r[0] === want.from);
+  return `
+    <div class="qask">${isRib ? "Rib ladder" : "Spine ladder"}</div>
+    <div class="qstem">${label}</div>
+    <div class="qsub">${isRib ? "Click the space between the ribs." : "Click the top level of its range."}</div>
+    <div class="lad" style="max-width:430px">
+      ${rows.map(r => {
+        const id = isRib ? `${r[0]}-${r[1]}` : r[0];
+        let cls = "ladrow pick";
+        if (R.done){
+          if (hit(r)) cls += " hit";
+          else if (R.picked === id) cls += " miss";
+        }
+        return `<div class="${cls}" ${R.done?"":`onclick="answer(${JSON.stringify(id).replace(/"/g,'&quot;')}, ${JSON.stringify(isRib?`${want[0]}-${want[1]}`:want.from).replace(/"/g,'&quot;')})"`}>
+          <span class="n">${isRib ? `${r[0]}–${r[1]}` : r[0]}</span>
+          <span class="ln"></span>
+          ${R.done && hit(r) ? `<span class="tag" style="color:var(--ok)">${esc(isRib ? it.d.ant : it.d.sym)}</span>` : ""}
+        </div>`;
+      }).join("")}
+    </div>
+    ${R.done ? revBox(it) : ""}`;
+}
+/* ---- the memory map -------------------------------------------------
+   Every reveal draws the same spine, so the thing you are memorising is a
+   position rather than a string. The sympathetic range is filled, the
+   posterior Chapman point is ringed, and the anterior point is marked on the
+   vertebra carrying its number — which *is* the rule (5th-6th space in front,
+   T5-T6 behind). The coloured foot of each cell is its collateral ganglion,
+   so the three gut bands are visible without being recited. */
+const MAPCELLS = ["C1","C2","T1","T2","T3","T4","T5","T6","T7","T8","T9","T10","T11","T12","L1","L2","L3","L4","L5"];
+function cellIdx(v){ return MAPCELLS.indexOf(String(v).toUpperCase()); }
+function bandOf(cell){
+  const i = cellIdx(cell);
+  if (i < 0) return "";
+  if (i >= cellIdx("T5")  && i <= cellIdx("T9"))  return "b-c";
+  if (i >= cellIdx("T10") && i <= cellIdx("T11")) return "b-s";
+  if (i >= cellIdx("T12") && i <= cellIdx("L2"))  return "b-i";
+  return "";
+}
+function levelTokens(s){ return (String(s||"").toUpperCase().match(/[CTL]\d+/g) || []); }
+function symSpan(s){
+  const t = levelTokens(s);
+  if (t.length < 2) return t.length ? [cellIdx(t[0]), cellIdx(t[0])] : null;
+  const a = cellIdx(t[0]), b = cellIdx(t[t.length-1]);
+  return (a < 0 || b < 0) ? null : [Math.min(a,b), Math.max(a,b)];
+}
+function mapBox(d){
+  const span = symSpan(d.sym);
+  const post = levelTokens(d.post).map(cellIdx).filter(i => i >= 0);
+  const ant  = (d.rib && d.rib[0] <= 12) ? cellIdx("T" + d.rib[0]) : -1;
+  if (!span && !post.length && ant < 0) return "";
+  const cells = MAPCELLS.map((c,i) => {
+    let cls = "cel " + bandOf(c);
+    const tips = [];
+    if (span && i >= span[0] && i <= span[1]){ cls += " insym"; tips.push("sympathetic " + d.sym); }
+    if (post.includes(i)){ cls += " ispost"; tips.push("posterior Chapman point"); }
+    if (i === ant){ cls += " isant"; tips.push("anterior point is the " + d.rib[0] + "-" + d.rib[1] + " space — same number"); }
+    return `<div class="${cls}" title="${esc(tips.join(" · ") || c)}">${c}</div>`;
+  }).join("");
+  const keys = [];
+  if (span)       keys.push(`<span><i class="ksym"></i>sympathetic supply</span>`);
+  if (post.length)keys.push(`<span><i class="kpost"></i>posterior point</span>`);
+  if (ant >= 0)   keys.push(`<span><i class="kant"></i>anterior point, same number</span>`);
+  keys.push(`<span><i class="kc"></i>celiac</span>`,
+            `<span><i class="ks"></i>superior mes.</span>`,
+            `<span><i class="ki"></i>inferior mes.</span>`);
+  return `<div class="map">
+    <div class="maplab">WHERE IT SITS</div>
+    <div class="strip">${cells}</div>
+    <div class="keys">${keys.join("")}</div>
+  </div>`;
+}
+/* ---- the reveal panel ---- */
+function revBox(it){
+  const d = it.d;
+  const bits = [];
+  if (d.sym)  bits.push(`<b>Sympathetic</b> ${esc(d.sym)}`);
+  if (d.para) bits.push(`<b>Parasympathetic</b> ${esc(d.para)}`);
+  if (d.gang) bits.push(`<b>Ganglion</b> ${esc(d.gang)}`);
+  if (d.ant)  bits.push(`<b>Anterior</b> ${esc(d.ant)}`);
+  if (d.post) bits.push(`<b>Posterior</b> ${esc(d.post)}`);
+  /* Text badges rather than emoji: these have to render in every font, and a
+     tofu box in the middle of the one line you are trying to memorise is worse
+     than no decoration at all. */
+  return `<div class="rev">
+    ${bits.join(" &nbsp;·&nbsp; ")}
+    ${d.hook ? `<span class="hk"><b style="color:var(--am)">HOOK</b> &nbsp;${d.hook}</span>` : ""}
+    ${d.conflict ? `<span class="hk" style="color:var(--bad)"><b>SOURCES DIFFER</b> &nbsp;${esc(d.conflict)}</span>` : ""}
+    ${mapBox(d)}
+  </div>
+  <div class="acts">
+    <button class="btn go" onclick="nextQ()">Next →</button>
+    <span class="mut" style="font-size:12px">or press <kbd>↵</kbd></span>
+  </div>`;
+}
+
+/* ---- results ---- */
+function renderResult(){
+  const R = S.run;
+  const n = R.right + R.wrong;
+  const pct = n ? Math.round(100*R.right/n) : 0;
+  const col = pct >= 85 ? "var(--ok)" : pct >= 65 ? "var(--am)" : "var(--bad)";
+  const secs = Math.round((Date.now() - R.t0)/1000);
+  V().innerHTML = `
+  <div class="qwrap">
+    <div class="card pad" style="text-align:center;padding:30px 22px">
+      <div class="mut" style="font-size:11px;font-weight:800;letter-spacing:.14em">RUN COMPLETE</div>
+      <div class="big" style="color:${col};margin:8px 0 2px">${pct}%</div>
+      <div class="mut">${R.right} of ${n} · ${secs}s${R.lives<=0?" · out of lives":""}</div>
+      <div class="acts" style="justify-content:center;margin-top:18px">
+        <button class="btn go" onclick="start('${R.mode}')">Run it again</button>
+        ${R.miss.length ? `<button class="btn" onclick="retryMissed()">Retry the ${R.miss.length} missed</button>` : ""}
+        <button class="btn" onclick="quitRun()">Back to modes</button>
+      </div>
+    </div>
+    ${R.miss.length ? `
+      <div class="card pad" style="margin-top:12px">
+        <h3>What you missed</h3>
+        <div class="misslist">${R.miss.map(m => `
+          <div class="missrow">
+            <b style="color:var(--ink)">${esc(m.d.org)}</b>
+            <span class="mut">${FIELDS.find(f=>f.f===m.f).ask}</span>
+            <span style="flex:1"></span>
+            <span style="color:var(--cy);font-family:ui-monospace,monospace">${esc(m.d[m.f])}</span>
+          </div>`).join("")}</div>
+      </div>` : ""}
+  </div>`;
+}
+function retryMissed(){
+  const items = S.run.miss.slice();
+  S.run = { mode:S.run.mode, cfg:{n:items.length, kind:"mc"}, items, i:0, right:0, wrong:0,
+            miss:[], picked:null, done:false, lives:Infinity, secs:0, t0:Date.now() };
+  render(); window.scrollTo(0,0);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   REFERENCE
+   ═════════════════════════════════════════════════════════════════════ */
+let refQ = "";
+function renderRef(){
+  V().innerHTML = `
+  <div class="card pad">
+    <h2>Reference</h2>
+    <p class="lede" style="margin:4px 0 12px">
+      Every structure, both systems, side by side. Search by organ, by level, or by rib space —
+      typing <b>T5</b> or <b>7</b> works.
+    </p>
+    <div class="tools">
+      <input id="refin" placeholder="Search organ, level or rib space…" value="${esc(refQ)}"
+             oninput="refQ=this.value;fillRef()">
+      <button class="btn sm" onclick="refQ='';fillRef();document.getElementById('refin').value=''">Clear</button>
+    </div>
+    <div class="tblscroll"><table>
+      <thead><tr>
+        <th>Structure</th><th>Sympathetic</th><th>Parasympathetic</th><th>Ganglion</th>
+        <th>Anterior Chapman</th><th>Posterior Chapman</th>
+      </tr></thead>
+      <tbody id="refbody"></tbody>
+    </table></div>
+  </div>`;
+  fillRef();
+}
+function fillRef(){
+  const q = refQ.trim().toLowerCase();
+  const rows = DATA.filter(d => !q || JSON.stringify(d).toLowerCase().includes(q));
+  $("refbody").innerHTML = rows.length ? rows.map(d => `
+    <tr>
+      <td class="org">${esc(d.org)}${d.side?` <span class="chip">${d.side}</span>`:""}</td>
+      <td>${d.sym?`<span class="lvl">${esc(d.sym)}</span>`:'<span class="mut">—</span>'}</td>
+      <td>${d.para?esc(d.para):'<span class="mut">—</span>'}</td>
+      <td>${d.gang?esc(d.gang):'<span class="mut">—</span>'}</td>
+      <td>${d.ant?`<span class="pt">${esc(d.ant)}</span>`:'<span class="mut">—</span>'}</td>
+      <td>${d.post?esc(d.post):'<span class="mut">—</span>'}${d.conflict?`<br><span class="chip warn" title="${esc(d.conflict)}">sources differ</span>`:""}</td>
+    </tr>`).join("")
+    : `<tr><td colspan="6" class="mut" style="padding:22px;text-align:center">Nothing matches that.</td></tr>`;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   LADDERS — the two pictures, as reference
+   ═════════════════════════════════════════════════════════════════════ */
+function renderLadders(){
+  const ribs = {};
+  DATA.filter(d => d.rib).forEach(d => {
+    const k = d.rib[0] + "-" + d.rib[1];
+    (ribs[k] = ribs[k] || []).push(d.org + (d.side && d.side !== "both" ? ` (${d.side})` : ""));
+  });
+  const spine = {};
+  SPINE.forEach(l => spine[l] = []);
+  DATA.filter(d => d.sym).forEach(d => {
+    const p = parseLevel(d.sym); if (!p) return;
+    const a = SPINE.indexOf(p.from), b = SPINE.indexOf(p.to);
+    if (a < 0 || b < 0) return;
+    for (let i = a; i <= b; i++) spine[SPINE[i]].push(d.org);
+  });
+  V().innerHTML = `
+  <div class="ladwrap">
+    <div class="card pad">
+      <h2>Anterior Chapman points</h2>
+      <p class="lede" style="margin:4px 0 12px;font-size:12.5px">
+        By intercostal space, near the sternum unless stated. Notice the numbers:
+        the posterior partner sits at the matching thoracic level.
+      </p>
+      <div class="lad" style="--rowh:auto">
+        ${Array.from({length:11},(_,i)=>{
+          const k = (i+1)+"-"+(i+2);
+          const who = ribs[k] || [];
+          return `<div class="ladrow ${who.length?"lit":""}" style="height:auto;min-height:30px;padding:5px 8px">
+            <span class="n">${i+1}–${i+2}</span>
+            <span class="ln" style="max-width:26px"></span>
+            <span class="tag" style="max-width:none;white-space:normal">${who.length?esc(who.join(" · ")):'<span class="mut">—</span>'}</span>
+          </div>`;
+        }).join("")}
+      </div>
+      <p class="lede" style="margin-top:12px;font-size:12px;color:var(--mut)">
+        Not on the rib ladder: pylorus (sternal body), appendix (12th rib, right), adrenals and kidneys and
+        bladder (around the umbilicus), urethra and ovaries and uterus (pubis), colon and prostate and
+        broad ligament (thigh), rectum (lesser trochanter).
+      </p>
+    </div>
+    <div class="card pad">
+      <h2>Viscerosomatic levels</h2>
+      <p class="lede" style="margin:4px 0 12px;font-size:12.5px">
+        Every structure whose sympathetic range covers that level. The crowding at T5–T9 and T10–T11
+        is the point: those are the celiac and superior mesenteric blocks.
+      </p>
+      <div class="lad" style="--rowh:auto">
+        ${SPINE.map(l => `
+          <div class="ladrow ${spine[l].length?"lit":""}" style="height:auto;min-height:30px;padding:5px 8px">
+            <span class="n">${l}</span>
+            <span class="ln" style="max-width:26px"></span>
+            <span class="tag" style="max-width:none;white-space:normal">${spine[l].length?esc(spine[l].join(" · ")):'<span class="mut">—</span>'}</span>
+          </div>`).join("")}
+      </div>
+      <p class="lede" style="margin-top:12px;font-size:12px;color:var(--mut)">
+        Reaching L2 means the parasympathetic supply is sacral (S2–S4). Everything else is vagus.
+      </p>
+    </div>
+  </div>`;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   TRICKS
+   ═════════════════════════════════════════════════════════════════════ */
+function renderHooks(){
+  V().innerHTML = `
+  <div class="card pad" style="margin-bottom:13px">
+    <h2>Memory tricks</h2>
+    <p class="lede" style="margin-top:4px">
+      Nothing here is a list to memorise — each one replaces a list with a reason. The blue ones are for
+      viscerosomatic levels, the pink for Chapman points, the purple for confusions, the amber for everything else.
+    </p>
+  </div>
+  <div class="hooks">
+    ${HOOKS.map(([c,t,b]) => `
+      <div class="hook ${c}"><div class="t">${t}</div><div class="b">${b}</div></div>`).join("")}
+  </div>`;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   KEYBOARD
+   ═════════════════════════════════════════════════════════════════════ */
+document.addEventListener("keydown", e => {
+  /* Type mode focuses its input on every render, so without this branch Escape
+     would only blur the field and the run would stay open — the key would look
+     broken. One press quits, from anywhere. */
+  if (/^(INPUT|TEXTAREA)$/.test((e.target||{}).tagName||"")) {
+    if (e.key === "Escape"){ e.preventDefault(); e.target.blur(); if (S.run) quitRun(); }
+    return;
+  }
+  if (e.key === "Escape" && S.run){ e.preventDefault(); quitRun(); return; }
+  if (!S.run || S.run.finished) return;
+  if (S.run.done){
+    if (e.key === "Enter" || e.key === " "){ e.preventDefault(); nextQ(); }
+    return;
+  }
+  const n = "1234".indexOf(e.key);
+  if (n >= 0){
+    const btns = document.querySelectorAll(".opts .opt");
+    if (btns[n]){ e.preventDefault(); btns[n].click(); }
+  }
+});
+
+applyTheme();
+renderTabs();
+render();
+</script>
+</body>
+</html>
