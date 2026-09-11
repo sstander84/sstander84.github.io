@@ -36,3 +36,5 @@ Rehum/MSK:
 
 OPP 4:
 [Both Exams](https://sstander84.github.io/opp4.html)
+[Sacrum/Pelvis DX practice](https://sstander84.github.io/sacrumdx.html)
+[Chapman's Points/VSR practice](https://sstander84.github.io/chapvsr.html)
