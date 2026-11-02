@@ -35,7 +35,8 @@ Rehum/MSK:
 [Both Exams](https://sstander84.github.io/rheum_msk.html)
 
 OPP 4:
-[Both Exams](https://sstander84.github.io/opp4.html)
+[MIDTERM](https://sstander84.github.io/opp4.html)
+[FINAL](https://sstander84.github.io/opp4_final.html)
 
 Neuroanatomy:
 [Both Exams](https://sstander84.github.io/neuroanatomy.html)
